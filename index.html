@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Professional Ruqyah App</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0d3b2e">
+
+<style>
+body{
+  margin:0;
+  font-family:Segoe UI;
+  background:linear-gradient(135deg,#0d3b2e,#145c43);
+  color:white;
+  text-align:center;
+}
+header{
+  padding:20px;
+  font-size:22px;
+  font-weight:bold;
+  background:#083c2a;
+  color:gold;
+}
+.container{padding:20px;}
+button{
+  padding:12px 20px;
+  margin:8px;
+  border:none;
+  border-radius:10px;
+  font-size:16px;
+  cursor:pointer;
+}
+.play{background:gold;}
+.stop{background:#b22222;color:white;}
+.progress{
+  margin-top:15px;
+  font-size:18px;
+  color:#ffd700;
+}
+.card{
+  background:#1a6b4d;
+  margin:8px auto;
+  padding:12px;
+  border-radius:12px;
+  max-width:400px;
+}
+</style>
+</head>
+<body>
+
+<header>📖 Professional Ruqyah App</header>
+
+<div class="container">
+
+<div>
+<label>Repeat Count:</label>
+<select id="repeatSelect">
+<option value="3">3 Times</option>
+<option value="5">5 Times</option>
+<option value="7">7 Times</option>
+</select>
+</div>
+
+<button class="play" onclick="start()">▶ Start Ruqyah</button>
+<button class="stop" onclick="stop()">⏹ Stop</button>
+
+<div class="progress" id="status"></div>
+
+<div id="playlist"></div>
+
+</div>
+
+<audio id="player"></audio>
+
+<script>
+
+const ruqyahList = [
+{ name:"Surah Fatiha", url:"https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3"},
+{ name:"Surah Ikhlas", url:"https://cdn.islamic.network/quran/audio/128/ar.alafasy/112.mp3"},
+{ name:"Surah Falaq", url:"https://cdn.islamic.network/quran/audio/128/ar.alafasy/113.mp3"},
+{ name:"Surah Naas", url:"https://cdn.islamic.network/quran/audio/128/ar.alafasy/114.mp3"},
+{ name:"Ayat ul Kursi", url:"https://cdn.islamic.network/quran/audio/128/ar.alafasy/2_255.mp3"},
+{ name:"Baqarah 285", url:"https://cdn.islamic.network/quran/audio/128/ar.alafasy/2_285.mp3"},
+{ name:"Baqarah 286", url:"https://cdn.islamic.network/quran/audio/128/ar.alafasy/2_286.mp3"}
+];
+
+const audio = document.getElementById("player");
+let index=0;
+let repeat=0;
+let maxRepeat=3;
+let playing=false;
+
+function renderPlaylist(){
+  const container=document.getElementById("playlist");
+  container.innerHTML="";
+  ruqyahList.forEach(item=>{
+    container.innerHTML+=`<div class="card">${item.name}</div>`;
+  });
+}
+renderPlaylist();
+
+function start(){
+  if(playing) return;
+  playing=true;
+  index=0;
+  repeat=0;
+  maxRepeat=document.getElementById("repeatSelect").value;
+  next();
+}
+
+function next(){
+  if(index>=ruqyahList.length){
+    document.getElementById("status").innerText="✅ Ruqyah Completed";
+    playing=false;
+    return;
+  }
+  audio.src=ruqyahList[index].url;
+  audio.play();
+  document.getElementById("status").innerText=
+  ruqyahList[index].name+" ("+(repeat+1)+"/"+maxRepeat+")";
+}
+
+audio.onended=function(){
+  if(!playing) return;
+  repeat++;
+  if(repeat<maxRepeat){
+    audio.play();
+    document.getElementById("status").innerText=
+    ruqyahList[index].name+" ("+(repeat+1)+"/"+maxRepeat+")";
+  }else{
+    repeat=0;
+    index++;
+    next();
+  }
+}
+
+function stop(){
+  audio.pause();
+  audio.currentTime=0;
+  playing=false;
+  document.getElementById("status").innerText="⏹ Stopped";
+}
+
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('service-worker.js');
+}
+
+</script>
+
+</body>
+</html>

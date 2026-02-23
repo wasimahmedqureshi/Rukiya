@@ -49,30 +49,25 @@ button{
 
 <script>
 
+const RECITER_ID = 7; 
+// 7 = Mishary Rashid Alafasy (Quran.com official)
+
 const audio = document.getElementById("player");
 
-const ruqyahSequence = [
-  {name:"Surah Fatiha", type:"surah", number:1},
-  {name:"Surah Ikhlas", type:"surah", number:112},
-  {name:"Surah Falaq", type:"surah", number:113},
-  {name:"Surah Naas", type:"surah", number:114},
-  {name:"Ayat ul Kursi", type:"ayah", surah:2, ayah:255},
-  {name:"Baqarah 285-286", type:"ayahRange", surah:2, start:285, end:286}
+const ruqyahItems = [
+  {type:"surah", number:1, name:"Surah Fatiha"},
+  {type:"surah", number:112, name:"Surah Ikhlas"},
+  {type:"surah", number:113, name:"Surah Falaq"},
+  {type:"surah", number:114, name:"Surah Naas"},
+  {type:"ayah", key:"2:255", name:"Ayat ul Kursi"},
+  {type:"ayahRange", start:285, end:286, surah:2, name:"Baqarah 285-286"}
 ];
 
 let index=0;
 let repeat=0;
 let playing=false;
-let ayahList=[];
+let ayahUrls=[];
 let ayahIndex=0;
-
-function start(){
-  if(playing) return;
-  playing=true;
-  index=0;
-  repeat=0;
-  playCurrent();
-}
 
 function stop(){
   audio.pause();
@@ -81,35 +76,44 @@ function stop(){
   document.getElementById("status").innerText="⏹ Stopped";
 }
 
-async function playCurrent(){
+async function start(){
+  if(playing) return;
+  playing=true;
+  index=0;
+  await playItem();
+}
 
-  if(index>=ruqyahSequence.length){
+async function playItem(){
+
+  if(index>=ruqyahItems.length){
     document.getElementById("status").innerText="✅ Ruqyah Completed";
     playing=false;
     return;
   }
 
-  const item = ruqyahSequence[index];
   repeat=0;
+  const item=ruqyahItems[index];
 
   if(item.type==="surah"){
-    audio.src=`https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/${item.number}.mp3`;
+    audio.src=`https://verses.quran.com/${RECITER_ID}/${item.number}.mp3`;
     audio.play();
-    document.getElementById("status").innerText=
-      item.name+" (1/3)";
+    document.getElementById("status").innerText=item.name+" (1/3)";
   }
 
   else if(item.type==="ayah"){
-    audio.src=`https://cdn.islamic.network/quran/audio/128/ar.alafasy/${item.surah}_${item.ayah}.mp3`;
+    const res=await fetch(`https://api.quran.com/api/v4/verses/by_key/${item.key}?audio=${RECITER_ID}`);
+    const data=await res.json();
+    audio.src=data.verse.audio.url;
     audio.play();
-    document.getElementById("status").innerText=
-      item.name+" (1/3)";
+    document.getElementById("status").innerText=item.name+" (1/3)";
   }
 
   else if(item.type==="ayahRange"){
-    ayahList=[];
+    ayahUrls=[];
     for(let i=item.start;i<=item.end;i++){
-      ayahList.push(`https://cdn.islamic.network/quran/audio/128/ar.alafasy/${item.surah}_${i}.mp3`);
+      const res=await fetch(`https://api.quran.com/api/v4/verses/by_key/${item.surah}:${i}?audio=${RECITER_ID}`);
+      const data=await res.json();
+      ayahUrls.push(data.verse.audio.url);
     }
     ayahIndex=0;
     playAyahRange(item.name);
@@ -117,23 +121,20 @@ async function playCurrent(){
 }
 
 function playAyahRange(name){
-  if(ayahIndex<ayahList.length){
-    audio.src=ayahList[ayahIndex];
-    audio.play();
-    document.getElementById("status").innerText=
-      name+" (Ayah "+(ayahIndex+1)+") ("+(repeat+1)+"/3)";
-  }
+  audio.src=ayahUrls[ayahIndex];
+  audio.play();
+  document.getElementById("status").innerText=
+    name+" (Ayah "+(ayahIndex+1)+") ("+(repeat+1)+"/3)";
 }
 
 audio.onended=function(){
-
   if(!playing) return;
 
-  const item = ruqyahSequence[index];
+  const item=ruqyahItems[index];
 
   if(item.type==="ayahRange"){
     ayahIndex++;
-    if(ayahIndex<ayahList.length){
+    if(ayahIndex<ayahUrls.length){
       playAyahRange(item.name);
       return;
     }
@@ -151,9 +152,8 @@ audio.onended=function(){
         item.name+" ("+(repeat+1)+"/3)";
     }
   }else{
-    repeat=0;
     index++;
-    playCurrent();
+    playItem();
   }
 };
 

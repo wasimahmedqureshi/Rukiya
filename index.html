@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Professional Islamic Ruqyah App</title>
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      background: #0b3d2e;
+      color: white;
+      padding: 20px;
+    }
+    h1 {
+      color: gold;
+    }
+    button {
+      padding: 12px 20px;
+      font-size: 18px;
+      background: gold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .status {
+      margin-top: 20px;
+      font-size: 18px;
+      color: lightgreen;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🕌 Professional Ruqyah App</h1>
+<p>All Surahs will play 3 times automatically</p>
+
+<button onclick="startRuqyah()">Start Ruqyah</button>
+
+<div class="status" id="status"></div>
+
+<script>
+const surahs = [
+  {name: "Surah Fatiha", file: "audio/fatiha.mp3"},
+  {name: "Surah Ikhlas", file: "audio/ikhlas.mp3"},
+  {name: "Surah Falaq", file: "audio/falaq.mp3"},
+  {name: "Surah Naas", file: "audio/naas.mp3"},
+  {name: "Ayat ul Kursi", file: "audio/ayatkursi.mp3"},
+  {name: "Baqarah 285-286", file: "audio/baqarah285_286.mp3"}
+];
+
+let currentSurah = 0;
+let repeatCount = 0;
+let audio = new Audio();
+
+function startRuqyah() {
+  currentSurah = 0;
+  repeatCount = 0;
+  playSurah();
+}
+
+function playSurah() {
+  if (currentSurah >= surahs.length) {
+    document.getElementById("status").innerHTML = "✅ Ruqyah Completed";
+    return;
+  }
+
+  const surah = surahs[currentSurah];
+  document.getElementById("status").innerHTML =
+    "Playing: " + surah.name + " (Repeat " + (repeatCount+1) + "/3)";
+
+  audio.src = surah.file;
+  audio.play();
+
+  audio.onended = function() {
+    repeatCount++;
+    if (repeatCount < 3) {
+      playSurah();
+    } else {
+      repeatCount = 0;
+      currentSurah++;
+      playSurah();
+    }
+  };
+}
+</script>
+
+</body>
+</html>

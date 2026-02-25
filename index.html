@@ -1,79 +1,86 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ruqyah Player</title>
-<style>
-body{margin:0;font-family:Segoe UI;background:#0d3b2e;color:white;text-align:center;padding:20px;}
-button{padding:12px 20px;margin:10px;border:none;border-radius:6px;font-size:16px;cursor:pointer;}
-.play{background:gold;}
-.stop{background:#b22222;color:white;}
-.status{margin-top:15px;font-size:18px;color:#ffd700;}
-</style>
+  <meta charset="UTF-8">
+  <title>Professional Islamic Ruqyah App</title>
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      background: #0b3d2e;
+      color: white;
+      padding: 20px;
+    }
+    h1 {
+      color: gold;
+    }
+    button {
+      padding: 12px 20px;
+      font-size: 18px;
+      background: gold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .status {
+      margin-top: 20px;
+      font-size: 18px;
+      color: lightgreen;
+    }
+  </style>
 </head>
 <body>
 
-<h1>Ruqyah Recitation</h1>
-<button class="play" onclick="start()">▶ Start</button>
-<button class="stop" onclick="stop()">⏹ Stop</button>
+<h1>🕌 Professional Ruqyah App</h1>
+<p>All Surahs will play 3 times automatically</p>
+
+<button onclick="startRuqyah()">Start Ruqyah</button>
+
 <div class="status" id="status"></div>
 
-<audio id="player"></audio>
-
 <script>
-const audio = document.getElementById("player");
-
-// stable surah audio files from quranicaudio.com
-const playlist = [
-  {name:"Surah Al-Fatiha", url:"https://download.quranicaudio.com/quran/abdullaah_alee_jaabir_studio/001.mp3"},
-  {name:"Surah Al-Ikhlas", url:"https://download.quranicaudio.com/quran/abdullaah_alee_jaabir_studio/112.mp3"},
-  {name:"Surah Al-Falaq", url:"https://download.quranicaudio.com/quran/abdullaah_alee_jaabir_studio/113.mp3"},
-  {name:"Surah An-Nas", url:"https://download.quranicaudio.com/quran/abdullaah_alee_jaabir_studio/114.mp3"},
-  {name:"Surah Al-Baqarah", url:"https://download.quranicaudio.com/quran/abdullaah_alee_jaabir_studio/002.mp3"}
+const surahs = [
+  {name: "Surah Fatiha", file: "audio/fatiha.mp3"},
+  {name: "Surah Ikhlas", file: "audio/ikhlas.mp3"},
+  {name: "Surah Falaq", file: "audio/falaq.mp3"},
+  {name: "Surah Naas", file: "audio/naas.mp3"},
+  {name: "Ayat ul Kursi", file: "audio/ayatkursi.mp3"},
+  {name: "Baqarah 285-286", file: "audio/baqarah285_286.mp3"}
 ];
 
-let index=0, repeat=0, playing=false;
+let currentSurah = 0;
+let repeatCount = 0;
+let audio = new Audio();
 
-function start() {
-  if(playing) return;
-  playing = true;
-  index = 0;
-  repeat = 0;
-  playNext();
+function startRuqyah() {
+  currentSurah = 0;
+  repeatCount = 0;
+  playSurah();
 }
 
-function playNext(){
-  if(index>=playlist.length){
-    document.getElementById("status").innerText="Completed";
-    playing=false;
+function playSurah() {
+  if (currentSurah >= surahs.length) {
+    document.getElementById("status").innerHTML = "✅ Ruqyah Completed";
     return;
   }
-  audio.src = playlist[index].url;
+
+  const surah = surahs[currentSurah];
+  document.getElementById("status").innerHTML =
+    "Playing: " + surah.name + " (Repeat " + (repeatCount+1) + "/3)";
+
+  audio.src = surah.file;
   audio.play();
-  document.getElementById("status").innerText=
-    playlist[index].name+" ("+(repeat+1)+"/3)";
-}
 
-audio.onended = function(){
-  if(!playing) return;
-  repeat++;
-  if(repeat<3){
-    audio.play();
-    document.getElementById("status").innerText=
-      playlist[index].name+" ("+(repeat+1)+"/3)";
-  } else {
-    repeat=0;
-    index++;
-    playNext();
-  }
-}
-
-function stop(){
-  audio.pause();
-  audio.currentTime=0;
-  playing=false;
-  document.getElementById("status").innerText="Stopped";
+  audio.onended = function() {
+    repeatCount++;
+    if (repeatCount < 3) {
+      playSurah();
+    } else {
+      repeatCount = 0;
+      currentSurah++;
+      playSurah();
+    }
+  };
 }
 </script>
 

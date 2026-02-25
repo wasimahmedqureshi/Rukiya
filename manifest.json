@@ -1,9 +1,0 @@
-{
-  "name": "Professional Ruqyah App",
-  "short_name": "Ruqyah",
-  "start_url": "index.html",
-  "display": "standalone",
-  "background_color": "#0d3b2e",
-  "theme_color": "#0d3b2e",
-  "icons": []
-}

@@ -1,7 +1,7 @@
 body{
 
 margin:0;
-font-family:Segoe UI;
+font-family:Arial;
 background:linear-gradient(135deg,#0b3d2e,#145c43);
 color:white;
 text-align:center;
@@ -25,7 +25,7 @@ color:gold;
 background:rgba(255,255,255,0.1);
 padding:25px;
 border-radius:15px;
-max-width:400px;
+max-width:420px;
 margin:auto;
 
 }
@@ -37,15 +37,9 @@ margin:8px;
 font-size:16px;
 border:none;
 border-radius:20px;
-cursor:pointer;
 background:gold;
 color:black;
-
-}
-
-button:hover{
-
-transform:scale(1.1);
+cursor:pointer;
 
 }
 
@@ -59,6 +53,6 @@ margin-top:20px;
 footer{
 
 margin-top:40px;
-opacity:0.7;
+font-size:14px;
 
 }

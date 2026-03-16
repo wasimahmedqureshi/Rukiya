@@ -1,54 +1,547 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ruqyah Healing · enhanced</title>
+  <!-- Font Awesome 6 (free) for crisp icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* === reset / base === */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    body {
+      min-height: 100vh;
+      background: linear-gradient(145deg, #0b3d2e 0%, #1b6e50 70%, #2a9d8f 100%);
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      padding: 1rem;
+      position: relative;
+    }
 
-<title>Ruqyah Healing</title>
+    /* subtle decorative pattern overlay */
+    body::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.08"><path d="M20 20 L30 15 L40 20 L50 10 L60 20 L70 12 L80 20 L85 30 L80 40 L90 50 L80 60 L85 70 L80 80 L70 85 L60 80 L50 90 L40 80 L30 85 L20 80 L15 70 L20 60 L10 50 L20 40 L15 30 Z" fill="none" stroke="%23ffd966" stroke-width="1.5"/></svg>');
+      background-size: 120px 120px;
+      pointer-events: none;
+    }
 
-<link rel="stylesheet" href="style.css">
+    .container {
+      width: 100%;
+      max-width: 560px;
+      z-index: 10;
+      animation: fadeIn 0.8s ease;
+    }
 
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(15px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* main card – glassmorphism + gold touches */
+    .player-card {
+      background: rgba(10, 50, 35, 0.4);
+      backdrop-filter: blur(14px) saturate(180%);
+      -webkit-backdrop-filter: blur(14px);
+      border-radius: 48px 48px 32px 32px;
+      border: 1px solid rgba(255, 215, 0, 0.25);
+      box-shadow: 0 25px 50px -8px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 215, 0, 0.2) inset;
+      padding: 2rem 1.8rem 2rem 1.8rem;
+      transition: all 0.3s;
+    }
+
+    h1 {
+      font-size: 2.4rem;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+      color: #ffdf7e;
+      text-shadow: 0 2px 10px rgba(255, 215, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 0.4rem;
+    }
+
+    h1 i {
+      font-size: 2.2rem;
+      color: #f5c542;
+      filter: drop-shadow(0 0 6px gold);
+    }
+
+    .subhead {
+      font-size: 1.15rem;
+      opacity: 0.9;
+      margin-bottom: 2rem;
+      border-bottom: 1px dashed rgba(255, 215, 0, 0.5);
+      padding-bottom: 0.7rem;
+      display: inline-block;
+    }
+
+    .bismillah {
+      font-size: 1.9rem;
+      font-family: 'Amiri', 'Traditional Arabic', 'Noto Naskh Arabic', serif;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 0.8rem 0.5rem;
+      border-radius: 60px;
+      margin: 1rem 0 1.5rem 0;
+      line-height: 1.4;
+      color: #ffebaa;
+      text-shadow: 0 0 8px #b8860b;
+      word-break: keep-all;
+      border: 1px solid rgba(255, 210, 0, 0.3);
+      box-shadow: 0 10px 15px -10px black;
+    }
+
+    /* time & progress area */
+    .time-indicator {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #ffe8b5;
+      margin-bottom: 5px;
+      letter-spacing: 0.3px;
+    }
+
+    #current-time, #duration-time {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 0.2rem 0.8rem;
+      border-radius: 30px;
+      border: 1px solid #ffd96677;
+      backdrop-filter: blur(4px);
+    }
+
+    /* progress bar (range) – modern styling */
+    #progress {
+      width: 100%;
+      height: 10px;
+      border-radius: 30px;
+      background: rgba(255, 255, 255, 0.15);
+      -webkit-appearance: none;
+      appearance: none;
+      outline: none;
+      cursor: pointer;
+      box-shadow: 0 0 5px #ffd96699, inset 0 1px 5px #00000055;
+      margin-bottom: 1.8rem;
+    }
+
+    #progress::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      background: gold;
+      border-radius: 50%;
+      border: 2px solid #fff3c9;
+      box-shadow: 0 0 12px #ffbf00, 0 2px 8px black;
+      transition: 0.1s;
+    }
+
+    #progress::-webkit-slider-thumb:hover {
+      transform: scale(1.18);
+      background: #ffdb70;
+    }
+
+    #progress::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      background: gold;
+      border-radius: 50%;
+      border: 2px solid #fff3c9;
+      box-shadow: 0 0 12px #ffbf00;
+      cursor: pointer;
+    }
+
+    /* control buttons grid */
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem 0.8rem;
+      margin: 1.2rem 0 2rem 0;
+    }
+
+    .ctrl-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 215, 0, 0.5);
+      border-radius: 50px;
+      padding: 0.8rem 1.5rem;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #ffecb3;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 20px -10px #000000cc, 0 0 0 1px #ffd96633 inset;
+      transition: 0.2s;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ctrl-btn i {
+      font-size: 1.4rem;
+      color: gold;
+      transition: 0.2s;
+    }
+
+    .ctrl-btn:hover {
+      background: rgba(255, 215, 0, 0.25);
+      color: #fff;
+      border-color: #ffdb8a;
+      transform: scale(1.02);
+      box-shadow: 0 12px 28px -8px black;
+    }
+
+    .ctrl-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* special toggle for play/pause (dynamic) */
+    #playPauseBtn i {
+      font-size: 1.6rem;
+    }
+
+    /* volume slider + icon row */
+    .volume-box {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 1rem 0 0.5rem 0;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 0.5rem 1.2rem;
+      border-radius: 60px;
+      border: 1px solid #ffd96655;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .volume-box i {
+      font-size: 1.4rem;
+      color: #ffdb7c;
+      min-width: 28px;
+      text-align: center;
+    }
+
+    #volumeSlider {
+      width: 140px;
+      height: 6px;
+      border-radius: 20px;
+      background: rgba(255,255,240,0.25);
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
+
+    #volumeSlider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 15px;
+      height: 15px;
+      background: gold;
+      border-radius: 50%;
+      border: 1px solid white;
+    }
+
+    #volumeSlider::-moz-range-thumb {
+      width: 15px;
+      height: 15px;
+      background: gold;
+      border-radius: 50%;
+    }
+
+    /* repeat button (active state) */
+    #repeatBtn.active {
+      background: #e5b80055;
+      border-color: gold;
+      color: #fff3b3;
+      box-shadow: 0 0 15px gold;
+    }
+
+    #repeatBtn.active i {
+      color: white;
+    }
+
+    footer {
+      margin-top: 2.5rem;
+      font-size: 1rem;
+      opacity: 0.9;
+      letter-spacing: 0.5px;
+      color: #ffe49e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border-top: 1px dashed #ffd96699;
+      padding-top: 1.3rem;
+    }
+
+    footer i {
+      color: #ffb347;
+    }
+
+    /* small screen */
+    @media (max-width: 460px) {
+      .player-card { padding: 1.5rem 1rem; }
+      h1 { font-size: 1.9rem; }
+      .bismillah { font-size: 1.4rem; }
+      .ctrl-btn { padding: 0.6rem 1.2rem; font-size: 1rem; }
+    }
+  </style>
 </head>
-
 <body>
-
 <div class="container">
+  <div class="player-card">
+    <h1>
+      <i class="fas fa-moon"></i> Ruqyah Healing <i class="fas fa-star"></i>
+    </h1>
+    <div class="subhead">الرقية الشرعية · protection & healing</div>
 
-<h1>🕌 Ruqyah Healing</h1>
-<p>Islamic Ruqyah for Protection & Healing</p>
+    <!-- Bismillah with elegance -->
+    <div class="bismillah">بِسْمِ ٱللَّٰهِ الرَّحْمَـٰنِ الرَّحِيمِ</div>
 
-<div class="player">
+    <!-- audio element (hidden) -->
+    <audio id="audio" preload="metadata" loop="false">
+      <source src="audio/ruqyah_full.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
 
-<h2>بِسْمِ ٱللَّٰهِ الرَّحْمَـٰنِ الرَّحِيمِ</h2>
+    <!-- time display row -->
+    <div class="time-indicator">
+      <span id="current-time">0:00</span>
+      <span id="duration-time">0:00</span>
+    </div>
 
-<audio id="audio">
+    <!-- progress slider -->
+    <input type="range" id="progress" value="0" min="0" max="100" step="0.1">
 
-<source src="audio/ruqyah_full.mp3" type="audio/mpeg">
+    <!-- main control row -->
+    <div class="controls">
+      <button class="ctrl-btn" id="playPauseBtn" title="Play / Pause">
+        <i class="fas fa-play"></i> <span>Play</span>
+      </button>
+      <button class="ctrl-btn" id="stopBtn" title="Stop">
+        <i class="fas fa-stop"></i> Stop
+      </button>
+      <button class="ctrl-btn" id="repeatBtn" title="Repeat (loop)">
+        <i class="fas fa-repeat"></i> Repeat
+      </button>
+    </div>
 
-</audio>
+    <!-- volume control -->
+    <div class="volume-box">
+      <i class="fas fa-volume-high" id="volumeIcon"></i>
+      <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.7">
+    </div>
 
-<div class="controls">
+    <!-- subtle reminder -->
+    <div style="font-size:0.9rem; margin-top:1rem; background:rgba(0,0,0,0.2); border-radius:50px; padding:0.3rem; color:#ffdb9f;">
+      <i class="fas fa-headphones"></i> listen with sincere heart
+    </div>
 
-<button onclick="playAudio()">▶ Play</button>
-<button onclick="pauseAudio()">⏸ Pause</button>
-<button onclick="stopAudio()">⏹ Stop</button>
-
+    <footer>
+      <i class="fas fa-heart" style="color: #ff9f6e;"></i> Developed by Vaseem Ahmad <i class="fas fa-hand-sparkles"></i>
+    </footer>
+  </div>
 </div>
 
-<input type="range" id="progress" value="0">
+<script>
+  (function() {
+    // get elements
+    const audio = document.getElementById('audio');
+    const progress = document.getElementById('progress');
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const repeatBtn = document.getElementById('repeatBtn');
+    const volumeSlider = document.getElementById('volumeSlider');
+    const volumeIcon = document.getElementById('volumeIcon');
+    const currentTimeSpan = document.getElementById('current-time');
+    const durationSpan = document.getElementById('duration-time');
 
-</div>
+    // state
+    let isPlaying = false;
+    let repeatActive = false;   // loop mode
 
-<footer>
+    // helper: format seconds to mm:ss
+    function formatTime(seconds) {
+      if (isNaN(seconds) || !isFinite(seconds)) return '0:00';
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    }
 
-Developed by Vaseem Ahmad
+    // update play/pause button icon & text
+    function updatePlayPauseButton() {
+      const icon = playPauseBtn.querySelector('i');
+      const span = playPauseBtn.querySelector('span');
+      if (isPlaying) {
+        icon.className = 'fas fa-pause';
+        span.textContent = 'Pause';
+      } else {
+        icon.className = 'fas fa-play';
+        span.textContent = 'Play';
+      }
+    }
 
-</footer>
+    // play audio
+    function playAudio() {
+      audio.play().catch(e => {
+        console.warn('playback failed:', e);
+        // maybe show a toast, but we'll just reset
+        isPlaying = false;
+        updatePlayPauseButton();
+      });
+      isPlaying = true;
+      updatePlayPauseButton();
+    }
 
-</div>
+    // pause audio
+    function pauseAudio() {
+      audio.pause();
+      isPlaying = false;
+      updatePlayPauseButton();
+    }
 
-<script src="script.js"></script>
+    // toggle play/pause
+    function togglePlay() {
+      if (isPlaying) {
+        pauseAudio();
+      } else {
+        playAudio();
+      }
+    }
 
+    // stop audio (pause + reset time)
+    function stopAudio() {
+      audio.pause();
+      audio.currentTime = 0;
+      isPlaying = false;
+      updatePlayPauseButton();
+      // progress bar will update via timeupdate
+    }
+
+    // update progress bar and time labels
+    function updateProgress() {
+      if (audio.duration && !isNaN(audio.duration)) {
+        const percent = (audio.currentTime / audio.duration) * 100;
+        progress.value = percent;
+        currentTimeSpan.textContent = formatTime(audio.currentTime);
+        durationSpan.textContent = formatTime(audio.duration);
+      } else {
+        // if duration unknown (metadata not loaded yet)
+        currentTimeSpan.textContent = '0:00';
+        durationSpan.textContent = '0:00';
+      }
+    }
+
+    // when metadata loaded (duration available)
+    audio.addEventListener('loadedmetadata', () => {
+      durationSpan.textContent = formatTime(audio.duration);
+      progress.max = 100;
+      // set volume from slider
+      audio.volume = volumeSlider.value;
+    });
+
+    // timeupdate event
+    audio.addEventListener('timeupdate', updateProgress);
+
+    // scrubber input (seeking)
+    progress.addEventListener('input', function(e) {
+      if (audio.duration) {
+        const newTime = (progress.value / 100) * audio.duration;
+        audio.currentTime = newTime;
+        // update current time while dragging
+        currentTimeSpan.textContent = formatTime(newTime);
+      }
+    });
+
+    // allow seeking even when paused (no need to change play state)
+    // but also if user drags and then plays, fine.
+
+    // volume slider
+    volumeSlider.addEventListener('input', function(e) {
+      const vol = parseFloat(volumeSlider.value);
+      audio.volume = vol;
+      // update icon based on volume level
+      if (vol >= 0.5) {
+        volumeIcon.className = 'fas fa-volume-high';
+      } else if (vol > 0) {
+        volumeIcon.className = 'fas fa-volume-low';
+      } else {
+        volumeIcon.className = 'fas fa-volume-off';
+      }
+    });
+
+    // repeat toggle
+    repeatBtn.addEventListener('click', function() {
+      repeatActive = !repeatActive;
+      audio.loop = repeatActive;
+      if (repeatActive) {
+        repeatBtn.classList.add('active');
+      } else {
+        repeatBtn.classList.remove('active');
+      }
+    });
+
+    // play/pause toggle
+    playPauseBtn.addEventListener('click', togglePlay);
+
+    // stop button
+    stopBtn.addEventListener('click', stopAudio);
+
+    // if audio ends, reset play button (and handle repeat via loop)
+    audio.addEventListener('ended', function() {
+      if (!repeatActive) {
+        isPlaying = false;
+        updatePlayPauseButton();
+        // optional: keep progress at end, but button shows play
+      }
+      // if loop active, it continues playing – button stays in "pause" mode? 
+      // we need to sync isPlaying. when loop continues, it's still playing.
+      // but ended fires then loop restarts. we keep isPlaying = true? 
+      // actually audio.loop will restart without firing 'ended'? In modern browsers,
+      // 'ended' does NOT fire when loop is true. So safe. For non-loop, we set isPlaying false.
+    });
+
+    // optional: handle if audio is paused by other means
+    audio.addEventListener('pause', function() {
+      if (audio.readyState !== 0 && !audio.ended) { // avoid toggling if ended already handled
+        isPlaying = false;
+        updatePlayPauseButton();
+      }
+    });
+
+    audio.addEventListener('play', function() {
+      isPlaying = true;
+      updatePlayPauseButton();
+    });
+
+    // initial update
+    updateProgress();
+
+    // set initial volume icon
+    if (audio.volume !== undefined) {
+      volumeSlider.value = audio.volume;
+      if (audio.volume >= 0.5) volumeIcon.className = 'fas fa-volume-high';
+      else if (audio.volume > 0) volumeIcon.className = 'fas fa-volume-low';
+      else volumeIcon.className = 'fas fa-volume-off';
+    }
+
+    // if audio file not found or load error
+    audio.addEventListener('error', function() {
+      // simple feedback: disable controls or show message
+      document.querySelector('.bismillah').innerHTML += '<span style="display:block; font-size:0.8rem; color:#ffb6b6;">⚠️ audio file missing? place in audio/ruqyah_full.mp3</span>';
+    });
+  })();
+</script>
 </body>
 </html>

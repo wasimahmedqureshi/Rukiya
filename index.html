@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Ruqyah Healing | Multi-Surah Player with Repeats (Fixed)</title>
-  <!-- Font Awesome 6 (free icons) -->
+  <title>Ruqyah Healing | Multi-Surah Player (Mobile Fixed)</title>
+  <!-- Font Awesome 6 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     * {
@@ -300,6 +300,39 @@
       padding-top: 1rem;
     }
 
+    /* resume button for mobile auto-play fix */
+    .resume-overlay {
+      position: fixed;
+      bottom: 30px;
+      left: 20px;
+      right: 20px;
+      background: #ffd966dd;
+      backdrop-filter: blur(20px);
+      color: #1e3a2f;
+      padding: 14px 20px;
+      border-radius: 60px;
+      text-align: center;
+      font-weight: bold;
+      z-index: 1000;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      border: 1px solid gold;
+      font-size: 1rem;
+    }
+    .resume-overlay button {
+      background: #1e3a2f;
+      border: none;
+      color: gold;
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
     @media (max-width: 780px) {
       .app-container { flex-direction: column; }
       .track-item { flex-wrap: wrap; }
@@ -367,6 +400,10 @@
 
   // DOM elements
   const audio = new Audio();
+  // Mobile: ensure playsinline and preload
+  audio.setAttribute('playsinline', 'true');
+  audio.preload = 'auto';
+  
   const progress = document.getElementById('progress');
   const playPauseBtn = document.getElementById('playPauseBtn');
   const stopBtn = document.getElementById('stopBtn');
@@ -385,6 +422,7 @@
   let currentTrackIndex = 0;
   let isPlaying = false;
   let isSeeking = false;
+  let resumeRequestCallback = null;  // stores function to retry playback after user tap
 
   // Helper: format time mm:ss
   function formatTime(seconds) {
@@ -392,6 +430,52 @@
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  }
+
+  // Show resume button on mobile when autoplay gets blocked
+  function showResumeButton(message, retryFn) {
+    // remove any existing overlay
+    const existing = document.querySelector('.resume-overlay');
+    if (existing) existing.remove();
+    
+    const overlay = document.createElement('div');
+    overlay.className = 'resume-overlay';
+    overlay.innerHTML = `
+      <span><i class="fas fa-hand-pointer"></i> ${message}</span>
+      <button id="resumePlayBtn">▶ Resume Playback</button>
+    `;
+    document.body.appendChild(overlay);
+    
+    const resumeBtn = document.getElementById('resumePlayBtn');
+    const handleResume = () => {
+      retryFn();
+      overlay.remove();
+      document.removeEventListener('click', handleGlobalTap);
+    };
+    const handleGlobalTap = (e) => {
+      if (e.target.closest('.resume-overlay')) return;
+      retryFn();
+      overlay.remove();
+      document.removeEventListener('click', handleGlobalTap);
+    };
+    resumeBtn.addEventListener('click', handleResume);
+    // Also tap anywhere outside can resume (optional)
+    document.addEventListener('click', handleGlobalTap);
+    // auto remove after 30 sec? not needed
+  }
+
+  // Core function to safely play (handles mobile autoplay block)
+  function safePlay() {
+    if (!audio.src) return Promise.reject(new Error("no source"));
+    return audio.play().catch(err => {
+      if (err.name === 'NotAllowedError') {
+        // on mobile, after ended, browser blocks automatic play
+        showResumeButton("⚠️ Tap to continue Ruqyah recitation", () => {
+          audio.play().catch(e => console.warn("still blocked", e));
+        });
+      }
+      return Promise.reject(err);
+    });
   }
 
   // Update UI: now playing info and repeat status
@@ -413,29 +497,25 @@
     const track = tracks[currentTrackIndex];
     if (!track) return;
     
-    // Important: remove old ended listener to avoid double triggers
     audio.removeEventListener('ended', handleTrackEnd);
     audio.src = track.file;
     audio.load();
     
-    // Re-attach ended event
     audio.addEventListener('ended', handleTrackEnd);
     
-    // Update duration display when metadata loads
     audio.addEventListener('loadedmetadata', function onMeta() {
       durationSpan.textContent = formatTime(audio.duration);
       progress.max = 100;
       audio.removeEventListener('loadedmetadata', onMeta);
     });
     
-    // If we were playing, resume after load
     if (isPlaying) {
-      audio.play().catch(err => console.warn("autoplay blocked:", err));
+      safePlay().catch(e => console.warn("load play error", e));
     }
     updateNowPlayingUI();
   }
 
-  // ========== CORE REPEAT LOGIC (FIXED FOR MOBILE) ==========
+  // ========== CORE REPEAT LOGIC WITH MOBILE FIX ==========
   function handleTrackEnd() {
     const track = tracks[currentTrackIndex];
     if (!track) return;
@@ -446,12 +526,19 @@
     if (track.currentRepeat < track.repeatCount) {
       // Need to play same surah again
       audio.currentTime = 0;
-      // Use a small timeout to ensure ended event fully processed, then play
-      setTimeout(() => {
-        if (isPlaying) {
-          audio.play().catch(e => console.warn("repeat play error", e));
-        }
-      }, 50);
+      // critical: use safePlay to handle mobile autoplay block
+      if (isPlaying) {
+        safePlay().catch(err => {
+          console.warn("auto-repeat blocked, showing resume");
+          // user will resume via overlay, keep isPlaying true? we'll manage
+          // But we must ensure that after resume, it continues correctly
+          // Store a callback to retry same track repeat
+          const retrySame = () => {
+            safePlay().catch(e => console.warn);
+          };
+          showResumeButton("Tap to continue recitation (repeat)", retrySame);
+        });
+      }
       updateNowPlayingUI();
     } else {
       // Finished all repeats of current surah -> move to next
@@ -461,7 +548,13 @@
         currentTrackIndex = nextIndex;
         loadCurrentTrack();
         if (isPlaying) {
-          audio.play().catch(e => console.warn("next track play error", e));
+          safePlay().catch(err => {
+            console.warn("next track autoplay blocked");
+            const retryNext = () => {
+              safePlay().catch(e => console.warn);
+            };
+            showResumeButton("Tap to continue to next Surah", retryNext);
+          });
         }
         updateNowPlayingUI();
       } else {
@@ -527,13 +620,14 @@
     if (isPlaying) {
       audio.pause();
     } else {
-      // If no valid src or ended, reload current track
       if (!audio.src || audio.ended) {
         loadCurrentTrack();
       }
-      audio.play().catch(err => {
-        console.error("Play error:", err);
-        alert("Audio file not found? Make sure MP3 files are in 'audio/' folder:\nfatiha.mp3, aayat_al_kursi.mp3, baqrha.mp3, ikhlas.mp3, falaq.mp3, naas.mp3");
+      safePlay().catch(err => {
+        console.warn("initial play blocked", err);
+        showResumeButton("Tap to start Ruqyah", () => {
+          safePlay().catch(e => console.warn);
+        });
       });
     }
   }
@@ -544,20 +638,23 @@
     isPlaying = false;
     updatePlayPauseButton();
     updateProgress();
+    // remove any resume overlay if present
+    const ov = document.querySelector('.resume-overlay');
+    if (ov) ov.remove();
   }
   
   function nextTrack() {
-    // Force finish current track repeats
     const currentTrack = tracks[currentTrackIndex];
     if (currentTrack) {
-      currentTrack.currentRepeat = currentTrack.repeatCount; // mark as done
+      currentTrack.currentRepeat = currentTrack.repeatCount; // force finish
     }
     handleTrackEnd(); // this will move to next or handle completion
+    const ov = document.querySelector('.resume-overlay');
+    if (ov) ov.remove();
   }
   
   function prevTrack() {
     if (currentTrackIndex > 0) {
-      // Reset current track repeats to zero
       const oldTrack = tracks[currentTrackIndex];
       if (oldTrack) oldTrack.currentRepeat = 0;
       currentTrackIndex--;
@@ -565,24 +662,24 @@
       if (newTrack) newTrack.currentRepeat = 0;
       loadCurrentTrack();
       if (isPlaying) {
-        audio.play().catch(e => console.warn);
+        safePlay().catch(e => console.warn);
       }
       updateNowPlayingUI();
     } else {
-      // Already first track: reset its repeats and restart
       const firstTrack = tracks[0];
       if (firstTrack) {
         firstTrack.currentRepeat = 0;
         currentTrackIndex = 0;
         loadCurrentTrack();
-        if (isPlaying) audio.play();
+        if (isPlaying) safePlay().catch(e => console.warn);
         updateNowPlayingUI();
       }
     }
+    const ov = document.querySelector('.resume-overlay');
+    if (ov) ov.remove();
   }
   
   function resetPlaylist() {
-    // Reset all repeat progress and go to first track
     tracks.forEach(t => t.currentRepeat = 0);
     currentTrackIndex = 0;
     loadCurrentTrack();
@@ -594,9 +691,11 @@
     audio.currentTime = 0;
     updateNowPlayingUI();
     renderPlaylist();
+    const ov = document.querySelector('.resume-overlay');
+    if (ov) ov.remove();
   }
   
-  // ========== RENDER PLAYLIST with repeat selectors (3,5,7) ==========
+  // ========== RENDER PLAYLIST with repeat selectors ==========
   function renderPlaylist() {
     playlistContainer.innerHTML = '';
     tracks.forEach((track, idx) => {
@@ -611,7 +710,6 @@
         <div class="repeat-count-badge"><i class="fas fa-arrows-spin"></i> ${track.currentRepeat}/${track.repeatCount} done</div>
       `;
       
-      // Dropdown for repeat count (3,5,7)
       const select = document.createElement('select');
       select.className = 'repeat-selector';
       [3,5,7].forEach(opt => {
@@ -624,32 +722,30 @@
       select.addEventListener('change', (e) => {
         const newVal = parseInt(e.target.value);
         track.repeatCount = newVal;
-        // Adjust current repeat if it exceeds new limit
         if (track.currentRepeat >= newVal) {
           track.currentRepeat = newVal - 1;
           if (track.currentRepeat < 0) track.currentRepeat = 0;
         }
-        // If this is the currently playing track, refresh UI
         if (idx === currentTrackIndex) {
           updateNowPlayingUI();
         }
-        renderPlaylist(); // re-render to update badge
+        renderPlaylist();
       });
       
-      // Play this surah from start (reset its repeats)
       const skipBtn = document.createElement('button');
       skipBtn.className = 'skip-icon';
       skipBtn.innerHTML = '<i class="fas fa-play-circle"></i>';
       skipBtn.title = 'Play this Surah from start (reset repeats)';
       skipBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        // Reset this track's repeat progress to 0
         track.currentRepeat = 0;
         currentTrackIndex = idx;
         loadCurrentTrack();
-        if (isPlaying) audio.play();
+        if (isPlaying) safePlay().catch(e => console.warn);
         updateNowPlayingUI();
         renderPlaylist();
+        const ov = document.querySelector('.resume-overlay');
+        if (ov) ov.remove();
       });
       
       div.appendChild(infoDiv);
@@ -670,7 +766,7 @@
   audio.volume = volumeSlider.value;
   volumeSlider.dispatchEvent(new Event('input'));
   
-  // Button event listeners
+  // Button listeners
   playPauseBtn.addEventListener('click', togglePlayPause);
   stopBtn.addEventListener('click', stopAudio);
   prevBtn.addEventListener('click', prevTrack);

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Ruqyah Healing | Multi-Surah Player with Repeats</title>
+  <title>Ruqyah Healing | Multi-Surah Player with Repeats (Fixed)</title>
   <!-- Font Awesome 6 (free icons) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
@@ -16,12 +16,11 @@
     body {
       min-height: 100vh;
       background: linear-gradient(145deg, #0a2f22 0%, #135c43 55%, #1e7a5c 100%);
-      font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+      font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, 'Roboto', sans-serif;
       padding: 1.5rem;
       position: relative;
     }
 
-    /* decorative overlay */
     body::before {
       content: "";
       position: fixed;
@@ -43,7 +42,6 @@
       z-index: 5;
     }
 
-    /* main player card */
     .player-card {
       flex: 2;
       min-width: 320px;
@@ -53,7 +51,6 @@
       border: 1px solid rgba(255, 215, 0, 0.35);
       padding: 2rem 1.8rem;
       box-shadow: 0 30px 45px -20px black, 0 0 0 1px rgba(255, 200, 0, 0.2) inset;
-      transition: all 0.2s;
     }
 
     .playlist-panel {
@@ -104,7 +101,6 @@
       text-align: center;
       color: #ffefb9;
       margin-bottom: 1.5rem;
-      letter-spacing: 1px;
     }
 
     .now-playing {
@@ -182,10 +178,10 @@
       color: #fff3cf;
       backdrop-filter: blur(5px);
       cursor: pointer;
-      transition: 0.2s;
       display: inline-flex;
       align-items: center;
       gap: 8px;
+      transition: 0.2s;
     }
 
     .ctrl-btn i {
@@ -196,7 +192,6 @@
     .ctrl-btn:hover {
       background: #ffd96633;
       transform: scale(1.02);
-      border-color: gold;
     }
 
     .volume-box {
@@ -215,7 +210,6 @@
       width: 120px;
     }
 
-    /* playlist styling */
     .playlist-header {
       display: flex;
       justify-content: space-between;
@@ -250,14 +244,12 @@
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 10px;
-      transition: all 0.2s;
       border-left: 4px solid transparent;
     }
 
     .track-item.active-track {
       background: #ffd96622;
       border-left: 4px solid gold;
-      box-shadow: 0 0 10px rgba(255,215,0,0.3);
     }
 
     .track-info {
@@ -276,6 +268,8 @@
       background: #00000066;
       padding: 2px 8px;
       border-radius: 50px;
+      display: inline-block;
+      margin-top: 4px;
     }
 
     .repeat-selector {
@@ -315,7 +309,7 @@
 <body>
 
 <div class="app-container">
-  <!-- MAIN AUDIO PLAYER SECTION -->
+  <!-- MAIN AUDIO PLAYER -->
   <div class="player-card">
     <h1><i class="fas fa-hand-sparkles"></i> Ruqyah Healing <i class="fas fa-quran"></i></h1>
     <div style="text-align:center"><span class="sub">الرقية الشرعية · protection & healing</span></div>
@@ -344,31 +338,31 @@
       <i class="fas fa-volume-high" id="volumeIcon"></i>
       <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.7">
     </div>
-    <footer><i class="fas fa-mosque"></i> Developed by Vaseem Ahmad · <i class="fas fa-repeat"></i> Repeats: 3/5/7 per Surah</footer>
+    <footer><i class="fas fa-mosque"></i> Developed by Vaseem Ahmad · <i class="fas fa-repeat"></i> Each Surah repeats 3/5/7 times</footer>
   </div>
 
-  <!-- PLAYLIST PANEL WITH REPEAT CONTROLS -->
+  <!-- PLAYLIST PANEL -->
   <div class="playlist-panel">
     <div class="playlist-header">
       <span class="playlist-title"><i class="fas fa-list-ul"></i> Ruqyah Surahs</span>
-      <button id="resetPlaylistBtn" class="reset-playlist" title="Reset all repeats & start from first"><i class="fas fa-arrows-rotate"></i> Reset</button>
+      <button id="resetPlaylistBtn" class="reset-playlist"><i class="fas fa-arrows-rotate"></i> Reset</button>
     </div>
     <div id="playlistContainer" style="max-height: 500px; overflow-y: auto; padding-right: 5px;"></div>
     <div style="margin-top: 15px; font-size: 12px; text-align:center; opacity:0.7;">
-      <i class="fas fa-info-circle"></i> Each Surah repeats selected times → next Surah
+      <i class="fas fa-info-circle"></i> Each surah repeats selected times → next surah automatically
     </div>
   </div>
 </div>
 
 <script>
-  // ---------- TRACKS DEFINITION (all MP3 inside "audio/" folder) ----------
+  // ======================= TRACKS DEFINITION =======================
   const tracks = [
-    { id: 0, name: "Surah Al-Fatiha",      file: "audio/fatiha.mp3",      repeatCount: 3, currentRepeatDone: 0 },
-    { id: 1, name: "Ayat-ul-Kursi",        file: "audio/aayat_al_kursi.mp3", repeatCount: 3, currentRepeatDone: 0 },
-    { id: 2, name: "Surah Al-Baqarah (Ruqyah)", file: "audio/baqrha.mp3", repeatCount: 3, currentRepeatDone: 0 },
-    { id: 3, name: "Surah Al-Ikhlas",      file: "audio/ikhlas.mp3",      repeatCount: 3, currentRepeatDone: 0 },
-    { id: 4, name: "Surah Al-Falaq",       file: "audio/falaq.mp3",       repeatCount: 3, currentRepeatDone: 0 },
-    { id: 5, name: "Surah An-Naas",        file: "audio/naas.mp3",        repeatCount: 3, currentRepeatDone: 0 }
+    { id: 0, name: "Surah Al-Fatiha",      file: "audio/fatiha.mp3",      repeatCount: 3, currentRepeat: 0 },
+    { id: 1, name: "Ayat-ul-Kursi",        file: "audio/aayat_al_kursi.mp3", repeatCount: 3, currentRepeat: 0 },
+    { id: 2, name: "Surah Al-Baqarah (Ruqyah)", file: "audio/baqrha.mp3", repeatCount: 3, currentRepeat: 0 },
+    { id: 3, name: "Surah Al-Ikhlas",      file: "audio/ikhlas.mp3",      repeatCount: 3, currentRepeat: 0 },
+    { id: 4, name: "Surah Al-Falaq",       file: "audio/falaq.mp3",       repeatCount: 3, currentRepeat: 0 },
+    { id: 5, name: "Surah An-Naas",        file: "audio/naas.mp3",        repeatCount: 3, currentRepeat: 0 }
   ];
 
   // DOM elements
@@ -387,12 +381,12 @@
   const playlistContainer = document.getElementById('playlistContainer');
   const resetPlaylistBtn = document.getElementById('resetPlaylistBtn');
 
-  // player state
+  // State
   let currentTrackIndex = 0;
   let isPlaying = false;
   let isSeeking = false;
 
-  // helper: format time mm:ss
+  // Helper: format time mm:ss
   function formatTime(seconds) {
     if (isNaN(seconds) || !isFinite(seconds)) return "0:00";
     const mins = Math.floor(seconds / 60);
@@ -400,90 +394,78 @@
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   }
 
-  // update UI for current track (name, repeat info)
-  function updateTrackUI() {
+  // Update UI: now playing info and repeat status
+  function updateNowPlayingUI() {
     const track = tracks[currentTrackIndex];
     if (track) {
       currentTrackNameSpan.textContent = track.name;
-      const remaining = track.repeatCount - track.currentRepeatDone;
-      repeatStatusSpan.innerHTML = `<i class="fas fa-repeat"></i> Repeat ${track.currentRepeatDone + 1} / ${track.repeatCount} (${remaining} left)`;
+      const remaining = track.repeatCount - track.currentRepeat;
+      repeatStatusSpan.innerHTML = `<i class="fas fa-repeat"></i> Repeat ${track.currentRepeat + 1} / ${track.repeatCount} (${remaining} left)`;
     } else {
-      currentTrackNameSpan.textContent = "—";
-      repeatStatusSpan.textContent = "Completed";
+      currentTrackNameSpan.textContent = "Completed";
+      repeatStatusSpan.textContent = "All done  🤲";
     }
-    renderPlaylist(); // refresh active highlight & repeat selectors
+    renderPlaylist(); // refresh highlight & badges
   }
 
-  // load current track (reset audio src, preserve volume)
+  // Load current track (without auto-playing)
   function loadCurrentTrack() {
     const track = tracks[currentTrackIndex];
     if (!track) return;
+    
+    // Important: remove old ended listener to avoid double triggers
+    audio.removeEventListener('ended', handleTrackEnd);
     audio.src = track.file;
     audio.load();
-    // update duration display when metadata loads
+    
+    // Re-attach ended event
+    audio.addEventListener('ended', handleTrackEnd);
+    
+    // Update duration display when metadata loads
     audio.addEventListener('loadedmetadata', function onMeta() {
       durationSpan.textContent = formatTime(audio.duration);
       progress.max = 100;
       audio.removeEventListener('loadedmetadata', onMeta);
     });
-    // if was playing, resume after load
+    
+    // If we were playing, resume after load
     if (isPlaying) {
-      audio.play().catch(e => console.warn("autoplay blocked?", e));
+      audio.play().catch(err => console.warn("autoplay blocked:", err));
     }
-    updateTrackUI();
+    updateNowPlayingUI();
   }
 
-  // update progress bar & time
-  function updateProgress() {
-    if (!isSeeking && audio.duration && !isNaN(audio.duration)) {
-      const percent = (audio.currentTime / audio.duration) * 100;
-      progress.value = percent;
-      currentTimeSpan.textContent = formatTime(audio.currentTime);
-    }
-  }
-
-  // seek event
-  progress.addEventListener('input', (e) => {
-    if (audio.duration) {
-      isSeeking = true;
-      const newTime = (progress.value / 100) * audio.duration;
-      audio.currentTime = newTime;
-      currentTimeSpan.textContent = formatTime(newTime);
-    }
-  });
-  progress.addEventListener('change', () => {
-    isSeeking = false;
-  });
-
-  // handle track ending: increment repeat or move to next
+  // ========== CORE REPEAT LOGIC (FIXED FOR MOBILE) ==========
   function handleTrackEnd() {
     const track = tracks[currentTrackIndex];
     if (!track) return;
-
-    // increment repeat counter for this track
-    track.currentRepeatDone++;
-
-    if (track.currentRepeatDone < track.repeatCount) {
-      // replay same track again
+    
+    // Increment repeat counter
+    track.currentRepeat++;
+    
+    if (track.currentRepeat < track.repeatCount) {
+      // Need to play same surah again
       audio.currentTime = 0;
-      if (isPlaying) {
-        audio.play().catch(e => console.warn);
-      }
-      updateTrackUI();
+      // Use a small timeout to ensure ended event fully processed, then play
+      setTimeout(() => {
+        if (isPlaying) {
+          audio.play().catch(e => console.warn("repeat play error", e));
+        }
+      }, 50);
+      updateNowPlayingUI();
     } else {
-      // repeats finished -> move to next track
-      track.currentRepeatDone = 0;   // reset for future revisit
+      // Finished all repeats of current surah -> move to next
+      track.currentRepeat = 0; // reset for potential revisit
       const nextIndex = currentTrackIndex + 1;
       if (nextIndex < tracks.length) {
-        // go to next track
         currentTrackIndex = nextIndex;
         loadCurrentTrack();
         if (isPlaying) {
-          audio.play().catch(e => console.warn);
+          audio.play().catch(e => console.warn("next track play error", e));
         }
-        updateTrackUI();
+        updateNowPlayingUI();
       } else {
-        // playlist completed
+        // Playlist complete
         isPlaying = false;
         updatePlayPauseButton();
         audio.pause();
@@ -495,8 +477,31 @@
     }
   }
 
-  audio.addEventListener('ended', handleTrackEnd);
+  // Progress & time update
+  function updateProgress() {
+    if (!isSeeking && audio.duration && !isNaN(audio.duration)) {
+      const percent = (audio.currentTime / audio.duration) * 100;
+      progress.value = percent;
+      currentTimeSpan.textContent = formatTime(audio.currentTime);
+    }
+  }
+  
+  // Seek events
+  progress.addEventListener('input', (e) => {
+    if (audio.duration) {
+      isSeeking = true;
+      const newTime = (progress.value / 100) * audio.duration;
+      audio.currentTime = newTime;
+      currentTimeSpan.textContent = formatTime(newTime);
+    }
+  });
+  progress.addEventListener('change', () => {
+    isSeeking = false;
+  });
+  
   audio.addEventListener('timeupdate', updateProgress);
+  
+  // Play/Pause state sync
   audio.addEventListener('play', () => {
     isPlaying = true;
     updatePlayPauseButton();
@@ -505,7 +510,7 @@
     if (!audio.ended) isPlaying = false;
     updatePlayPauseButton();
   });
-
+  
   function updatePlayPauseButton() {
     const icon = playPauseBtn.querySelector('i');
     const span = playPauseBtn.querySelector('span');
@@ -517,27 +522,22 @@
       span.textContent = 'Play';
     }
   }
-
+  
   function togglePlayPause() {
     if (isPlaying) {
       audio.pause();
     } else {
-      // if no track loaded or ended? ensure track ready
+      // If no valid src or ended, reload current track
       if (!audio.src || audio.ended) {
-        // restart from current track index but reset repeats? better just reload current
-        const track = tracks[currentTrackIndex];
-        if (track) {
-          loadCurrentTrack();
-        }
+        loadCurrentTrack();
       }
-      audio.play().catch(e => {
-        console.warn("play error", e);
-        // might be missing file, show alert gentle
-        alert("Audio file not found? Make sure MP3 files are in 'audio/' folder:\n fatiha.mp3, aayat_al_kursi.mp3, baqrha.mp3, ikhlas.mp3, falaq.mp3, naas.mp3");
+      audio.play().catch(err => {
+        console.error("Play error:", err);
+        alert("Audio file not found? Make sure MP3 files are in 'audio/' folder:\nfatiha.mp3, aayat_al_kursi.mp3, baqrha.mp3, ikhlas.mp3, falaq.mp3, naas.mp3");
       });
     }
   }
-
+  
   function stopAudio() {
     audio.pause();
     audio.currentTime = 0;
@@ -545,46 +545,45 @@
     updatePlayPauseButton();
     updateProgress();
   }
-
+  
   function nextTrack() {
-    // finish current track repeats manually? user skip: move to next track
+    // Force finish current track repeats
     const currentTrack = tracks[currentTrackIndex];
     if (currentTrack) {
-      currentTrack.currentRepeatDone = currentTrack.repeatCount; // force finish
+      currentTrack.currentRepeat = currentTrack.repeatCount; // mark as done
     }
-    handleTrackEnd(); // this will advance
+    handleTrackEnd(); // this will move to next or handle completion
   }
-
+  
   function prevTrack() {
-    // go to previous track, reset its repeat progress to 0 so it plays from first repeat
     if (currentTrackIndex > 0) {
-      // reset current track repeat count to 0 before leaving? optional, but we want fresh start on prev
+      // Reset current track repeats to zero
       const oldTrack = tracks[currentTrackIndex];
-      if (oldTrack) oldTrack.currentRepeatDone = 0;
+      if (oldTrack) oldTrack.currentRepeat = 0;
       currentTrackIndex--;
       const newTrack = tracks[currentTrackIndex];
-      if (newTrack) newTrack.currentRepeatDone = 0;
+      if (newTrack) newTrack.currentRepeat = 0;
       loadCurrentTrack();
       if (isPlaying) {
         audio.play().catch(e => console.warn);
       }
-      updateTrackUI();
+      updateNowPlayingUI();
     } else {
-      // first track, just reset repeats and restart
+      // Already first track: reset its repeats and restart
       const firstTrack = tracks[0];
       if (firstTrack) {
-        firstTrack.currentRepeatDone = 0;
+        firstTrack.currentRepeat = 0;
         currentTrackIndex = 0;
         loadCurrentTrack();
         if (isPlaying) audio.play();
-        updateTrackUI();
+        updateNowPlayingUI();
       }
     }
   }
-
+  
   function resetPlaylist() {
-    // reset all repeat progress to 0 and set index to 0, stop playback
-    tracks.forEach(t => t.currentRepeatDone = 0);
+    // Reset all repeat progress and go to first track
+    tracks.forEach(t => t.currentRepeat = 0);
     currentTrackIndex = 0;
     loadCurrentTrack();
     if (isPlaying) {
@@ -593,27 +592,26 @@
       updatePlayPauseButton();
     }
     audio.currentTime = 0;
-    updateTrackUI();
+    updateNowPlayingUI();
     renderPlaylist();
   }
-
-  // ----- RENDER PLAYLIST with repeat selectors (3,5,7) -----
+  
+  // ========== RENDER PLAYLIST with repeat selectors (3,5,7) ==========
   function renderPlaylist() {
     playlistContainer.innerHTML = '';
     tracks.forEach((track, idx) => {
       const div = document.createElement('div');
       div.className = 'track-item';
       if (idx === currentTrackIndex) div.classList.add('active-track');
-
-      // left side info
+      
       const infoDiv = document.createElement('div');
       infoDiv.className = 'track-info';
       infoDiv.innerHTML = `
         <div class="track-name">${track.name}</div>
-        <div class="repeat-count-badge"><i class="fas fa-arrows-spin"></i> ${track.currentRepeatDone}/${track.repeatCount} done</div>
+        <div class="repeat-count-badge"><i class="fas fa-arrows-spin"></i> ${track.currentRepeat}/${track.repeatCount} done</div>
       `;
-
-      // repeat selector (3,5,7)
+      
+      // Dropdown for repeat count (3,5,7)
       const select = document.createElement('select');
       select.className = 'repeat-selector';
       [3,5,7].forEach(opt => {
@@ -626,42 +624,42 @@
       select.addEventListener('change', (e) => {
         const newVal = parseInt(e.target.value);
         track.repeatCount = newVal;
-        // IMPORTANT: if current repeat progress exceeds new limit, adjust currentRepeatDone to not exceed newCount
-        if (track.currentRepeatDone >= newVal) {
-          track.currentRepeatDone = newVal - 1;
-          if (track.currentRepeatDone < 0) track.currentRepeatDone = 0;
+        // Adjust current repeat if it exceeds new limit
+        if (track.currentRepeat >= newVal) {
+          track.currentRepeat = newVal - 1;
+          if (track.currentRepeat < 0) track.currentRepeat = 0;
         }
-        // if currently playing this track, update UI
+        // If this is the currently playing track, refresh UI
         if (idx === currentTrackIndex) {
-          updateTrackUI();
+          updateNowPlayingUI();
         }
         renderPlaylist(); // re-render to update badge
       });
-
-      // manual skip buttons for each track
+      
+      // Play this surah from start (reset its repeats)
       const skipBtn = document.createElement('button');
       skipBtn.className = 'skip-icon';
       skipBtn.innerHTML = '<i class="fas fa-play-circle"></i>';
       skipBtn.title = 'Play this Surah from start (reset repeats)';
       skipBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        // reset repeat progress for this track to 0
-        track.currentRepeatDone = 0;
+        // Reset this track's repeat progress to 0
+        track.currentRepeat = 0;
         currentTrackIndex = idx;
         loadCurrentTrack();
         if (isPlaying) audio.play();
-        updateTrackUI();
+        updateNowPlayingUI();
         renderPlaylist();
       });
-
+      
       div.appendChild(infoDiv);
       div.appendChild(select);
       div.appendChild(skipBtn);
       playlistContainer.appendChild(div);
     });
   }
-
-  // volume handling
+  
+  // Volume control
   volumeSlider.addEventListener('input', (e) => {
     const vol = parseFloat(e.target.value);
     audio.volume = vol;
@@ -671,23 +669,24 @@
   });
   audio.volume = volumeSlider.value;
   volumeSlider.dispatchEvent(new Event('input'));
-
-  // event listeners
+  
+  // Button event listeners
   playPauseBtn.addEventListener('click', togglePlayPause);
   stopBtn.addEventListener('click', stopAudio);
-  nextBtn.addEventListener('click', nextTrack);
   prevBtn.addEventListener('click', prevTrack);
+  nextBtn.addEventListener('click', nextTrack);
   resetPlaylistBtn.addEventListener('click', resetPlaylist);
-
-  // initial load
+  
+  // Initial load
   loadCurrentTrack();
   renderPlaylist();
-  updateTrackUI();
-
-  // Error handling for missing files
+  updateNowPlayingUI();
+  
+  // Error handling for missing files (mobile friendly)
   audio.addEventListener('error', (e) => {
-    console.error("Audio load error", audio.error);
-    const msg = "⚠️ Could not load: " + (tracks[currentTrackIndex]?.file || "audio file") + "\nPlease ensure MP3 files are in 'audio/' folder with exact names:\nfatiha.mp3, aayat_al_kursi.mp3, baqrha.mp3, ikhlas.mp3, falaq.mp3, naas.mp3";
+    console.error("Audio error", audio.error);
+    const missingFile = tracks[currentTrackIndex]?.file || "audio file";
+    const msg = `⚠️ Could not load: ${missingFile}\nPlease ensure MP3 files are in 'audio/' folder with exact names:\nfatiha.mp3, aayat_al_kursi.mp3, baqrha.mp3, ikhlas.mp3, falaq.mp3, naas.mp3`;
     if (!document.querySelector('.error-toast')) {
       const toast = document.createElement('div');
       toast.className = 'error-toast';

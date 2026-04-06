@@ -2,12 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ruqyah Healing · enhanced</title>
-  <!-- Font Awesome 6 (free) for crisp icons -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Ruqyah Healing · Dual Track | Protection & Peace</title>
+  <!-- Font Awesome 6 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    /* === reset / base === */
     * {
       margin: 0;
       padding: 0;
@@ -26,7 +25,6 @@
       position: relative;
     }
 
-    /* subtle decorative pattern overlay */
     body::before {
       content: "";
       position: absolute;
@@ -38,7 +36,7 @@
 
     .container {
       width: 100%;
-      max-width: 560px;
+      max-width: 620px;
       z-index: 10;
       animation: fadeIn 0.8s ease;
     }
@@ -48,7 +46,6 @@
       100% { opacity: 1; transform: translateY(0); }
     }
 
-    /* main card – glassmorphism + gold touches */
     .player-card {
       background: rgba(10, 50, 35, 0.4);
       backdrop-filter: blur(14px) saturate(180%);
@@ -56,7 +53,7 @@
       border-radius: 48px 48px 32px 32px;
       border: 1px solid rgba(255, 215, 0, 0.25);
       box-shadow: 0 25px 50px -8px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 215, 0, 0.2) inset;
-      padding: 2rem 1.8rem 2rem 1.8rem;
+      padding: 2rem 1.8rem;
       transition: all 0.3s;
     }
 
@@ -82,10 +79,48 @@
     .subhead {
       font-size: 1.15rem;
       opacity: 0.9;
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
       border-bottom: 1px dashed rgba(255, 215, 0, 0.5);
       padding-bottom: 0.7rem;
       display: inline-block;
+    }
+
+    /* track selector row */
+    .track-selector {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 1.8rem;
+    }
+    .track-btn {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 215, 0, 0.6);
+      border-radius: 60px;
+      padding: 0.6rem 1.2rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #ffefc0;
+      backdrop-filter: blur(6px);
+      cursor: pointer;
+      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .track-btn i {
+      font-size: 1.1rem;
+      color: #ffd966;
+    }
+    .track-btn.active-track-btn {
+      background: #ffd96633;
+      border-color: gold;
+      color: #fff6cf;
+      box-shadow: 0 0 12px rgba(255,215,0,0.5);
+    }
+    .track-btn:hover {
+      background: #ffd96622;
+      transform: scale(1.02);
     }
 
     .bismillah {
@@ -98,12 +133,10 @@
       line-height: 1.4;
       color: #ffebaa;
       text-shadow: 0 0 8px #b8860b;
-      word-break: keep-all;
       border: 1px solid rgba(255, 210, 0, 0.3);
       box-shadow: 0 10px 15px -10px black;
     }
 
-    /* time & progress area */
     .time-indicator {
       display: flex;
       justify-content: space-between;
@@ -122,7 +155,6 @@
       backdrop-filter: blur(4px);
     }
 
-    /* progress bar (range) – modern styling */
     #progress {
       width: 100%;
       height: 10px;
@@ -147,22 +179,6 @@
       transition: 0.1s;
     }
 
-    #progress::-webkit-slider-thumb:hover {
-      transform: scale(1.18);
-      background: #ffdb70;
-    }
-
-    #progress::-moz-range-thumb {
-      width: 18px;
-      height: 18px;
-      background: gold;
-      border-radius: 50%;
-      border: 2px solid #fff3c9;
-      box-shadow: 0 0 12px #ffbf00;
-      cursor: pointer;
-    }
-
-    /* control buttons grid */
     .controls {
       display: flex;
       flex-wrap: wrap;
@@ -192,27 +208,14 @@
     .ctrl-btn i {
       font-size: 1.4rem;
       color: gold;
-      transition: 0.2s;
     }
 
     .ctrl-btn:hover {
       background: rgba(255, 215, 0, 0.25);
-      color: #fff;
-      border-color: #ffdb8a;
       transform: scale(1.02);
-      box-shadow: 0 12px 28px -8px black;
+      border-color: #ffdb8a;
     }
 
-    .ctrl-btn:active {
-      transform: scale(0.98);
-    }
-
-    /* special toggle for play/pause (dynamic) */
-    #playPauseBtn i {
-      font-size: 1.6rem;
-    }
-
-    /* volume slider + icon row */
     .volume-box {
       display: flex;
       align-items: center;
@@ -230,8 +233,6 @@
     .volume-box i {
       font-size: 1.4rem;
       color: #ffdb7c;
-      min-width: 28px;
-      text-align: center;
     }
 
     #volumeSlider {
@@ -240,7 +241,6 @@
       border-radius: 20px;
       background: rgba(255,255,240,0.25);
       -webkit-appearance: none;
-      cursor: pointer;
     }
 
     #volumeSlider::-webkit-slider-thumb {
@@ -252,14 +252,6 @@
       border: 1px solid white;
     }
 
-    #volumeSlider::-moz-range-thumb {
-      width: 15px;
-      height: 15px;
-      background: gold;
-      border-radius: 50%;
-    }
-
-    /* repeat button (active state) */
     #repeatBtn.active {
       background: #e5b80055;
       border-color: gold;
@@ -267,15 +259,10 @@
       box-shadow: 0 0 15px gold;
     }
 
-    #repeatBtn.active i {
-      color: white;
-    }
-
     footer {
       margin-top: 2.5rem;
       font-size: 1rem;
       opacity: 0.9;
-      letter-spacing: 0.5px;
       color: #ffe49e;
       display: flex;
       align-items: center;
@@ -285,16 +272,31 @@
       padding-top: 1.3rem;
     }
 
-    footer i {
-      color: #ffb347;
+    .now-playing-label {
+      font-size: 0.8rem;
+      text-align: center;
+      margin-bottom: 5px;
+      opacity: 0.85;
+    }
+    #currentTrackLabel {
+      font-weight: bold;
+      text-align: center;
+      font-size: 0.95rem;
+      background: rgba(0,0,0,0.3);
+      display: inline-block;
+      width: auto;
+      margin: 0 auto 12px auto;
+      padding: 5px 15px;
+      border-radius: 60px;
+      backdrop-filter: blur(4px);
     }
 
-    /* small screen */
     @media (max-width: 460px) {
       .player-card { padding: 1.5rem 1rem; }
       h1 { font-size: 1.9rem; }
       .bismillah { font-size: 1.4rem; }
       .ctrl-btn { padding: 0.6rem 1.2rem; font-size: 1rem; }
+      .track-btn { padding: 0.4rem 1rem; font-size: 0.85rem; }
     }
   </style>
 </head>
@@ -304,48 +306,45 @@
     <h1>
       <i class="fas fa-moon"></i> Ruqyah Healing <i class="fas fa-star"></i>
     </h1>
-    <div class="subhead">الرقية الشرعية · protection & healing</div>
+    <div class="subhead">الرقية الشرعية · protection & inner peace</div>
 
-    <!-- Bismillah with elegance -->
+    <!-- Dual Track Selection Buttons -->
+    <div class="track-selector">
+      <button id="trackProtectBtn" class="track-btn active-track-btn">
+        <i class="fas fa-shield-alt"></i> Standard Ruqyah<br><span style="font-size:0.7rem;">Protection & Healing</span>
+      </button>
+      <button id="trackPeaceBtn" class="track-btn">
+        <i class="fas fa-dove"></i> Peace & Relief<br><span style="font-size:0.7rem;">Depression · Anxiety · Loneliness</span>
+      </button>
+    </div>
+
     <div class="bismillah">بِسْمِ ٱللَّٰهِ الرَّحْمَـٰنِ الرَّحِيمِ</div>
 
-    <!-- audio element (hidden) -->
-    <audio id="audio" preload="metadata" loop="false">
-      <source src="audio/ruqyah_full.mp3" type="audio/mpeg">
-      Your browser does not support the audio element.
-    </audio>
+    <!-- Now playing indicator -->
+    <div class="now-playing-label"><i class="fas fa-headphones"></i> NOW PLAYING</div>
+    <div id="currentTrackLabel" style="text-align:center; margin-bottom: 1rem;">🕌 Protection Ruqyah</div>
 
-    <!-- time display row -->
+    <audio id="audio" preload="metadata"></audio>
+
     <div class="time-indicator">
       <span id="current-time">0:00</span>
       <span id="duration-time">0:00</span>
     </div>
-
-    <!-- progress slider -->
     <input type="range" id="progress" value="0" min="0" max="100" step="0.1">
 
-    <!-- main control row -->
     <div class="controls">
-      <button class="ctrl-btn" id="playPauseBtn" title="Play / Pause">
-        <i class="fas fa-play"></i> <span>Play</span>
-      </button>
-      <button class="ctrl-btn" id="stopBtn" title="Stop">
-        <i class="fas fa-stop"></i> Stop
-      </button>
-      <button class="ctrl-btn" id="repeatBtn" title="Repeat (loop)">
-        <i class="fas fa-repeat"></i> Repeat
-      </button>
+      <button class="ctrl-btn" id="playPauseBtn"><i class="fas fa-play"></i> <span>Play</span></button>
+      <button class="ctrl-btn" id="stopBtn"><i class="fas fa-stop"></i> Stop</button>
+      <button class="ctrl-btn" id="repeatBtn"><i class="fas fa-repeat"></i> Repeat</button>
     </div>
 
-    <!-- volume control -->
     <div class="volume-box">
       <i class="fas fa-volume-high" id="volumeIcon"></i>
       <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.7">
     </div>
 
-    <!-- subtle reminder -->
-    <div style="font-size:0.9rem; margin-top:1rem; background:rgba(0,0,0,0.2); border-radius:50px; padding:0.3rem; color:#ffdb9f;">
-      <i class="fas fa-headphones"></i> listen with sincere heart
+    <div style="font-size:0.85rem; margin-top:1rem; background:rgba(0,0,0,0.2); border-radius:50px; padding:0.3rem; text-align:center; color:#ffdb9f;">
+      <i class="fas fa-info-circle"></i> Choose recitation above · repeat mode available
     </div>
 
     <footer>
@@ -356,7 +355,23 @@
 
 <script>
   (function() {
-    // get elements
+    // ----- TRACKS -----
+    const TRACKS = {
+      protection: {
+        name: "🛡️ Protection & Healing Ruqyah",
+        url: "audio/ruqyah_full.mp3"
+      },
+      peace: {
+        name: "🌸 Peace & Relief (Depression / Anxiety / Loneliness)",
+        url: "audio/Powerful Ruqyah FOR PEACE And Remove Depression Anxiety Loneliness.mp3"
+      }
+    };
+
+    let currentTrackKey = "protection"; // 'protection' or 'peace'
+    let isPlaying = false;
+    let repeatActive = false;
+
+    // DOM elements
     const audio = document.getElementById('audio');
     const progress = document.getElementById('progress');
     const playPauseBtn = document.getElementById('playPauseBtn');
@@ -366,12 +381,11 @@
     const volumeIcon = document.getElementById('volumeIcon');
     const currentTimeSpan = document.getElementById('current-time');
     const durationSpan = document.getElementById('duration-time');
+    const currentTrackLabelSpan = document.getElementById('currentTrackLabel');
+    const trackProtectBtn = document.getElementById('trackProtectBtn');
+    const trackPeaceBtn = document.getElementById('trackPeaceBtn');
 
-    // state
-    let isPlaying = false;
-    let repeatActive = false;   // loop mode
-
-    // helper: format seconds to mm:ss
+    // helper: format time mm:ss
     function formatTime(seconds) {
       if (isNaN(seconds) || !isFinite(seconds)) return '0:00';
       const mins = Math.floor(seconds / 60);
@@ -379,7 +393,7 @@
       return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
     }
 
-    // update play/pause button icon & text
+    // update play/pause button appearance
     function updatePlayPauseButton() {
       const icon = playPauseBtn.querySelector('i');
       const span = playPauseBtn.querySelector('span');
@@ -392,26 +406,92 @@
       }
     }
 
-    // play audio
-    function playAudio() {
-      audio.play().catch(e => {
-        console.warn('playback failed:', e);
-        // maybe show a toast, but we'll just reset
+    // load current track based on selected key
+    function loadCurrentTrack() {
+      const track = TRACKS[currentTrackKey];
+      if (!track) return;
+      
+      // store current playing state before changing src
+      const wasPlaying = isPlaying;
+      if (wasPlaying) {
+        audio.pause();
+      }
+      
+      audio.src = track.url;
+      audio.load();
+      
+      // update label
+      currentTrackLabelSpan.innerHTML = track.name;
+      
+      // after metadata loaded, update duration and reset progress
+      audio.addEventListener('loadedmetadata', function onMeta() {
+        durationSpan.textContent = formatTime(audio.duration);
+        progress.max = 100;
+        progress.value = 0;
+        currentTimeSpan.textContent = '0:00';
+        audio.removeEventListener('loadedmetadata', onMeta);
+      });
+      
+      // if it was playing before switching, resume after load
+      if (wasPlaying) {
+        audio.play().then(() => {
+          isPlaying = true;
+          updatePlayPauseButton();
+        }).catch(e => {
+          console.warn("autoplay after track switch failed:", e);
+          isPlaying = false;
+          updatePlayPauseButton();
+        });
+      } else {
         isPlaying = false;
         updatePlayPauseButton();
-      });
-      isPlaying = true;
-      updatePlayPauseButton();
+      }
     }
 
-    // pause audio
+    // switch track (called when user clicks on protection or peace button)
+    function switchTrack(trackKey) {
+      if (currentTrackKey === trackKey) return;
+      currentTrackKey = trackKey;
+      
+      // update active button style
+      if (trackKey === 'protection') {
+        trackProtectBtn.classList.add('active-track-btn');
+        trackPeaceBtn.classList.remove('active-track-btn');
+      } else {
+        trackPeaceBtn.classList.add('active-track-btn');
+        trackProtectBtn.classList.remove('active-track-btn');
+      }
+      
+      // reset repeat UI state (but keep repeatActive value? we keep as is)
+      // load new track
+      loadCurrentTrack();
+      
+      // if repeat was on, ensure it's applied to new track
+      audio.loop = repeatActive;
+    }
+
+    // Play / Pause core
+    function playAudio() {
+      audio.play().then(() => {
+        isPlaying = true;
+        updatePlayPauseButton();
+      }).catch(e => {
+        console.warn('playback failed:', e);
+        isPlaying = false;
+        updatePlayPauseButton();
+        // show gentle hint if file missing
+        if (e.name === 'NotSupportedError' || audio.error) {
+          alert(`⚠️ Audio file not found!\n\nMake sure "${TRACKS[currentTrackKey].url}" exists in the "audio/" folder.\n\nFor Peace track, please upload:\n"Powerful Ruqyah FOR PEACE And Remove Depression Anxiety Loneliness.mp3"`);
+        }
+      });
+    }
+
     function pauseAudio() {
       audio.pause();
       isPlaying = false;
       updatePlayPauseButton();
     }
 
-    // toggle play/pause
     function togglePlay() {
       if (isPlaying) {
         pauseAudio();
@@ -420,16 +500,19 @@
       }
     }
 
-    // stop audio (pause + reset time)
     function stopAudio() {
       audio.pause();
       audio.currentTime = 0;
       isPlaying = false;
       updatePlayPauseButton();
-      // progress bar will update via timeupdate
+      // update progress display
+      if (audio.duration) {
+        progress.value = 0;
+        currentTimeSpan.textContent = '0:00';
+      }
     }
 
-    // update progress bar and time labels
+    // update progress bar & time labels
     function updateProgress() {
       if (audio.duration && !isNaN(audio.duration)) {
         const percent = (audio.currentTime / audio.duration) * 100;
@@ -437,41 +520,41 @@
         currentTimeSpan.textContent = formatTime(audio.currentTime);
         durationSpan.textContent = formatTime(audio.duration);
       } else {
-        // if duration unknown (metadata not loaded yet)
         currentTimeSpan.textContent = '0:00';
         durationSpan.textContent = '0:00';
       }
     }
 
-    // when metadata loaded (duration available)
-    audio.addEventListener('loadedmetadata', () => {
-      durationSpan.textContent = formatTime(audio.duration);
-      progress.max = 100;
-      // set volume from slider
-      audio.volume = volumeSlider.value;
-    });
-
-    // timeupdate event
-    audio.addEventListener('timeupdate', updateProgress);
-
-    // scrubber input (seeking)
-    progress.addEventListener('input', function(e) {
+    // seek
+    function handleProgressInput(e) {
       if (audio.duration) {
         const newTime = (progress.value / 100) * audio.duration;
         audio.currentTime = newTime;
-        // update current time while dragging
         currentTimeSpan.textContent = formatTime(newTime);
       }
-    });
+    }
 
-    // allow seeking even when paused (no need to change play state)
-    // but also if user drags and then plays, fine.
+    // ended event: if repeat is active, loop manually (since loop attribute works, but we also keep UI)
+    // Actually loop attribute handles continuous replay, but we also want to keep isPlaying true.
+    // However, to avoid any issue we rely on audio.loop.
+    function onEnded() {
+      if (!repeatActive) {
+        isPlaying = false;
+        updatePlayPauseButton();
+      } else {
+        // loop is active, audio will restart automatically, isPlaying stays true
+        // but ensure button state remains "pause"
+        if (!isPlaying) {
+          isPlaying = true;
+          updatePlayPauseButton();
+        }
+      }
+    }
 
-    // volume slider
-    volumeSlider.addEventListener('input', function(e) {
+    // volume
+    function setupVolume() {
       const vol = parseFloat(volumeSlider.value);
       audio.volume = vol;
-      // update icon based on volume level
       if (vol >= 0.5) {
         volumeIcon.className = 'fas fa-volume-high';
       } else if (vol > 0) {
@@ -479,10 +562,38 @@
       } else {
         volumeIcon.className = 'fas fa-volume-off';
       }
+    }
+
+    // Event listeners
+    audio.addEventListener('loadedmetadata', () => {
+      durationSpan.textContent = formatTime(audio.duration);
+      progress.max = 100;
+    });
+    audio.addEventListener('timeupdate', updateProgress);
+    audio.addEventListener('ended', onEnded);
+    audio.addEventListener('play', () => {
+      isPlaying = true;
+      updatePlayPauseButton();
+    });
+    audio.addEventListener('pause', () => {
+      if (!audio.ended) {
+        isPlaying = false;
+        updatePlayPauseButton();
+      }
     });
 
-    // repeat toggle
-    repeatBtn.addEventListener('click', function() {
+    progress.addEventListener('input', handleProgressInput);
+
+    volumeSlider.addEventListener('input', () => {
+      const vol = parseFloat(volumeSlider.value);
+      audio.volume = vol;
+      if (vol >= 0.5) volumeIcon.className = 'fas fa-volume-high';
+      else if (vol > 0) volumeIcon.className = 'fas fa-volume-low';
+      else volumeIcon.className = 'fas fa-volume-off';
+    });
+
+    // repeat button logic
+    repeatBtn.addEventListener('click', () => {
       repeatActive = !repeatActive;
       audio.loop = repeatActive;
       if (repeatActive) {
@@ -492,54 +603,56 @@
       }
     });
 
-    // play/pause toggle
+    // control buttons
     playPauseBtn.addEventListener('click', togglePlay);
-
-    // stop button
     stopBtn.addEventListener('click', stopAudio);
 
-    // if audio ends, reset play button (and handle repeat via loop)
-    audio.addEventListener('ended', function() {
-      if (!repeatActive) {
-        isPlaying = false;
-        updatePlayPauseButton();
-        // optional: keep progress at end, but button shows play
+    // track switching buttons
+    trackProtectBtn.addEventListener('click', () => switchTrack('protection'));
+    trackPeaceBtn.addEventListener('click', () => switchTrack('peace'));
+
+    // initial setup
+    audio.volume = volumeSlider.value;
+    setupVolume();
+    // set default track (protection)
+    currentTrackKey = 'protection';
+    trackProtectBtn.classList.add('active-track-btn');
+    trackPeaceBtn.classList.remove('active-track-btn');
+    loadCurrentTrack();
+
+    // initial repeat UI (default off)
+    repeatActive = false;
+    audio.loop = false;
+    repeatBtn.classList.remove('active');
+
+    // error handler for missing files
+    audio.addEventListener('error', (e) => {
+      console.error("Audio error", audio.error);
+      const trackName = TRACKS[currentTrackKey].name;
+      let friendlyMsg = `⚠️ Could not load "${trackName}".\n\n`;
+      if (currentTrackKey === 'protection') {
+        friendlyMsg += `Please ensure "audio/ruqyah_full.mp3" exists.\n`;
+      } else {
+        friendlyMsg += `Please upload the file:\n"Powerful Ruqyah FOR PEACE And Remove Depression Anxiety Loneliness.mp3"\ninside the "audio/" folder.`;
       }
-      // if loop active, it continues playing – button stays in "pause" mode? 
-      // we need to sync isPlaying. when loop continues, it's still playing.
-      // but ended fires then loop restarts. we keep isPlaying = true? 
-      // actually audio.loop will restart without firing 'ended'? In modern browsers,
-      // 'ended' does NOT fire when loop is true. So safe. For non-loop, we set isPlaying false.
-    });
-
-    // optional: handle if audio is paused by other means
-    audio.addEventListener('pause', function() {
-      if (audio.readyState !== 0 && !audio.ended) { // avoid toggling if ended already handled
-        isPlaying = false;
-        updatePlayPauseButton();
+      if (!document.querySelector('.error-toast')) {
+        const toast = document.createElement('div');
+        toast.className = 'error-toast';
+        toast.style.position = 'fixed';
+        toast.style.bottom = '20px';
+        toast.style.left = '20px';
+        toast.style.right = '20px';
+        toast.style.background = '#c72a2add';
+        toast.style.backdropFilter = 'blur(12px)';
+        toast.style.padding = '12px';
+        toast.style.borderRadius = '30px';
+        toast.style.textAlign = 'center';
+        toast.style.fontSize = '0.9rem';
+        toast.style.zIndex = '999';
+        toast.innerHTML = friendlyMsg + ' <button style="background:gold; border:none; border-radius:30px; padding:4px 12px; margin-left:10px;" onclick="this.parentElement.remove()">OK</button>';
+        document.body.appendChild(toast);
+        setTimeout(() => toast?.remove(), 8000);
       }
-    });
-
-    audio.addEventListener('play', function() {
-      isPlaying = true;
-      updatePlayPauseButton();
-    });
-
-    // initial update
-    updateProgress();
-
-    // set initial volume icon
-    if (audio.volume !== undefined) {
-      volumeSlider.value = audio.volume;
-      if (audio.volume >= 0.5) volumeIcon.className = 'fas fa-volume-high';
-      else if (audio.volume > 0) volumeIcon.className = 'fas fa-volume-low';
-      else volumeIcon.className = 'fas fa-volume-off';
-    }
-
-    // if audio file not found or load error
-    audio.addEventListener('error', function() {
-      // simple feedback: disable controls or show message
-      document.querySelector('.bismillah').innerHTML += '<span style="display:block; font-size:0.8rem; color:#ffb6b6;">⚠️ audio file missing? place in audio/ruqyah_full.mp3</span>';
     });
   })();
 </script>

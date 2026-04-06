@@ -2,11 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Ruqyah Healing | Multi-Surah Player (Mobile Fixed)</title>
-  <!-- Font Awesome 6 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ruqyah Healing · enhanced</title>
+  <!-- Font Awesome 6 (free) for crisp icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
+    /* === reset / base === */
     * {
       margin: 0;
       padding: 0;
@@ -15,139 +16,124 @@
 
     body {
       min-height: 100vh;
-      background: linear-gradient(145deg, #0a2f22 0%, #135c43 55%, #1e7a5c 100%);
-      font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, 'Roboto', sans-serif;
-      padding: 1.5rem;
+      background: linear-gradient(145deg, #0b3d2e 0%, #1b6e50 70%, #2a9d8f 100%);
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      padding: 1rem;
       position: relative;
     }
 
+    /* subtle decorative pattern overlay */
     body::before {
       content: "";
-      position: fixed;
+      position: absolute;
       inset: 0;
-      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.06"><path fill="none" stroke="%23ffd966" stroke-width="1.2" d="M20 30 L35 18 L50 30 L65 18 L80 30 L75 48 L88 62 L72 74 L50 68 L28 74 L12 62 L25 48 Z"/><circle cx="50" cy="48" r="6" stroke="%23ffd966" fill="none"/></svg>');
-      background-size: 110px 110px;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.08"><path d="M20 20 L30 15 L40 20 L50 10 L60 20 L70 12 L80 20 L85 30 L80 40 L90 50 L80 60 L85 70 L80 80 L70 85 L60 80 L50 90 L40 80 L30 85 L20 80 L15 70 L20 60 L10 50 L20 40 L15 30 Z" fill="none" stroke="%23ffd966" stroke-width="1.5"/></svg>');
+      background-size: 120px 120px;
       pointer-events: none;
     }
 
-    .app-container {
-      max-width: 1300px;
-      margin: 0 auto;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 2rem;
-      justify-content: center;
-      align-items: flex-start;
-      position: relative;
-      z-index: 5;
+    .container {
+      width: 100%;
+      max-width: 560px;
+      z-index: 10;
+      animation: fadeIn 0.8s ease;
     }
 
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(15px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* main card – glassmorphism + gold touches */
     .player-card {
-      flex: 2;
-      min-width: 320px;
-      background: rgba(10, 45, 32, 0.5);
-      backdrop-filter: blur(16px);
-      border-radius: 48px;
-      border: 1px solid rgba(255, 215, 0, 0.35);
-      padding: 2rem 1.8rem;
-      box-shadow: 0 30px 45px -20px black, 0 0 0 1px rgba(255, 200, 0, 0.2) inset;
-    }
-
-    .playlist-panel {
-      flex: 1.4;
-      min-width: 280px;
-      background: rgba(0, 0, 0, 0.35);
-      backdrop-filter: blur(12px);
-      border-radius: 40px;
-      padding: 1.6rem 1rem;
-      border: 1px solid #ffd96655;
-      box-shadow: 0 20px 35px -15px black;
+      background: rgba(10, 50, 35, 0.4);
+      backdrop-filter: blur(14px) saturate(180%);
+      -webkit-backdrop-filter: blur(14px);
+      border-radius: 48px 48px 32px 32px;
+      border: 1px solid rgba(255, 215, 0, 0.25);
+      box-shadow: 0 25px 50px -8px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 215, 0, 0.2) inset;
+      padding: 2rem 1.8rem 2rem 1.8rem;
+      transition: all 0.3s;
     }
 
     h1 {
-      font-size: 2.2rem;
-      font-weight: 700;
+      font-size: 2.4rem;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+      color: #ffdf7e;
+      text-shadow: 0 2px 10px rgba(255, 215, 0, 0.6);
       display: flex;
       align-items: center;
-      gap: 12px;
       justify-content: center;
-      color: #ffdf7e;
-      text-shadow: 0 2px 6px rgba(0,0,0,0.5);
-      margin-bottom: 0.25rem;
+      gap: 10px;
+      margin-bottom: 0.4rem;
     }
 
     h1 i {
-      font-size: 2rem;
+      font-size: 2.2rem;
       color: #f5c542;
+      filter: drop-shadow(0 0 6px gold);
     }
 
-    .sub {
-      text-align: center;
-      font-size: 0.9rem;
+    .subhead {
+      font-size: 1.15rem;
       opacity: 0.9;
-      border-bottom: 1px dashed #ffd966aa;
+      margin-bottom: 2rem;
+      border-bottom: 1px dashed rgba(255, 215, 0, 0.5);
+      padding-bottom: 0.7rem;
       display: inline-block;
-      width: auto;
-      margin: 0 auto 1.5rem auto;
-      padding-bottom: 0.5rem;
     }
 
     .bismillah {
-      font-family: 'Amiri', 'Noto Naskh Arabic', serif;
-      font-size: 1.8rem;
-      background: rgba(0,0,0,0.3);
+      font-size: 1.9rem;
+      font-family: 'Amiri', 'Traditional Arabic', 'Noto Naskh Arabic', serif;
+      background: rgba(0, 0, 0, 0.25);
       padding: 0.8rem 0.5rem;
       border-radius: 60px;
-      text-align: center;
-      color: #ffefb9;
-      margin-bottom: 1.5rem;
+      margin: 1rem 0 1.5rem 0;
+      line-height: 1.4;
+      color: #ffebaa;
+      text-shadow: 0 0 8px #b8860b;
+      word-break: keep-all;
+      border: 1px solid rgba(255, 210, 0, 0.3);
+      box-shadow: 0 10px 15px -10px black;
     }
 
-    .now-playing {
-      background: rgba(255,215,0,0.15);
-      border-radius: 60px;
-      padding: 0.5rem 1rem;
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-
-    .now-playing-label {
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-
-    #currentTrackName {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: #ffeaac;
-    }
-
-    #repeatStatus {
-      font-size: 0.9rem;
-      background: #00000066;
-      display: inline-block;
-      padding: 0.2rem 0.8rem;
-      border-radius: 50px;
-      margin-top: 6px;
-    }
-
-    .time-row {
+    /* time & progress area */
+    .time-indicator {
       display: flex;
       justify-content: space-between;
-      font-size: 0.85rem;
-      margin: 0.7rem 0 0.3rem;
-      color: #ffefc0;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #ffe8b5;
+      margin-bottom: 5px;
+      letter-spacing: 0.3px;
     }
 
+    #current-time, #duration-time {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 0.2rem 0.8rem;
+      border-radius: 30px;
+      border: 1px solid #ffd96677;
+      backdrop-filter: blur(4px);
+    }
+
+    /* progress bar (range) – modern styling */
     #progress {
       width: 100%;
-      height: 8px;
-      border-radius: 20px;
-      background: rgba(255,255,200,0.2);
+      height: 10px;
+      border-radius: 30px;
+      background: rgba(255, 255, 255, 0.15);
       -webkit-appearance: none;
+      appearance: none;
+      outline: none;
       cursor: pointer;
-      margin-bottom: 1.2rem;
+      box-shadow: 0 0 5px #ffd96699, inset 0 1px 5px #00000055;
+      margin-bottom: 1.8rem;
     }
 
     #progress::-webkit-slider-thumb {
@@ -156,652 +142,406 @@
       height: 18px;
       background: gold;
       border-radius: 50%;
-      border: 2px solid #fff0b5;
-      box-shadow: 0 0 8px gold;
+      border: 2px solid #fff3c9;
+      box-shadow: 0 0 12px #ffbf00, 0 2px 8px black;
+      transition: 0.1s;
     }
 
+    #progress::-webkit-slider-thumb:hover {
+      transform: scale(1.18);
+      background: #ffdb70;
+    }
+
+    #progress::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      background: gold;
+      border-radius: 50%;
+      border: 2px solid #fff3c9;
+      box-shadow: 0 0 12px #ffbf00;
+      cursor: pointer;
+    }
+
+    /* control buttons grid */
     .controls {
       display: flex;
       flex-wrap: wrap;
+      align-items: center;
       justify-content: center;
-      gap: 12px;
-      margin: 1.2rem 0;
+      gap: 0.6rem 0.8rem;
+      margin: 1.2rem 0 2rem 0;
     }
 
     .ctrl-btn {
-      background: rgba(255,255,240,0.08);
-      border: 1px solid #ffd966aa;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 215, 0, 0.5);
       border-radius: 50px;
-      padding: 10px 20px;
-      font-size: 1rem;
+      padding: 0.8rem 1.5rem;
+      font-size: 1.2rem;
       font-weight: 600;
-      color: #fff3cf;
-      backdrop-filter: blur(5px);
+      color: #ffecb3;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 20px -10px #000000cc, 0 0 0 1px #ffd96633 inset;
+      transition: 0.2s;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      transition: 0.2s;
     }
 
     .ctrl-btn i {
-      font-size: 1.2rem;
-      color: #ffd966;
+      font-size: 1.4rem;
+      color: gold;
+      transition: 0.2s;
     }
 
     .ctrl-btn:hover {
-      background: #ffd96633;
+      background: rgba(255, 215, 0, 0.25);
+      color: #fff;
+      border-color: #ffdb8a;
       transform: scale(1.02);
+      box-shadow: 0 12px 28px -8px black;
     }
 
+    .ctrl-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* special toggle for play/pause (dynamic) */
+    #playPauseBtn i {
+      font-size: 1.6rem;
+    }
+
+    /* volume slider + icon row */
     .volume-box {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 12px;
-      background: rgba(0,0,0,0.3);
-      width: fit-content;
-      margin: 0 auto;
-      padding: 5px 18px;
+      gap: 0.5rem;
+      margin: 1rem 0 0.5rem 0;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 0.5rem 1.2rem;
       border-radius: 60px;
+      border: 1px solid #ffd96655;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .volume-box i {
+      font-size: 1.4rem;
+      color: #ffdb7c;
+      min-width: 28px;
+      text-align: center;
     }
 
     #volumeSlider {
-      width: 120px;
-    }
-
-    .playlist-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 1rem;
-      padding-bottom: 8px;
-      border-bottom: 2px solid #ffd96677;
-    }
-
-    .playlist-title {
-      font-size: 1.4rem;
-      font-weight: bold;
-    }
-
-    .reset-playlist {
-      background: none;
-      border: 1px solid #ffd966aa;
-      padding: 5px 12px;
-      border-radius: 40px;
-      color: #ffecb3;
-      cursor: pointer;
-      font-size: 0.7rem;
-    }
-
-    .track-item {
-      background: rgba(0,0,0,0.3);
-      margin: 12px 0;
-      padding: 10px 14px;
-      border-radius: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 10px;
-      border-left: 4px solid transparent;
-    }
-
-    .track-item.active-track {
-      background: #ffd96622;
-      border-left: 4px solid gold;
-    }
-
-    .track-info {
-      display: flex;
-      flex-direction: column;
-      flex: 2;
-    }
-
-    .track-name {
-      font-weight: 600;
-      font-size: 1rem;
-    }
-
-    .repeat-count-badge {
-      font-size: 0.7rem;
-      background: #00000066;
-      padding: 2px 8px;
-      border-radius: 50px;
-      display: inline-block;
-      margin-top: 4px;
-    }
-
-    .repeat-selector {
-      background: #0f2f24;
-      border: 1px solid #ffd966aa;
-      border-radius: 30px;
-      padding: 5px 8px;
-      color: #ffeaac;
-      font-weight: bold;
+      width: 140px;
+      height: 6px;
+      border-radius: 20px;
+      background: rgba(255,255,240,0.25);
+      -webkit-appearance: none;
       cursor: pointer;
     }
 
-    .skip-icon {
-      background: transparent;
-      border: none;
-      color: #ffde9e;
-      font-size: 1.2rem;
-      cursor: pointer;
-      padding: 5px 8px;
+    #volumeSlider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 15px;
+      height: 15px;
+      background: gold;
+      border-radius: 50%;
+      border: 1px solid white;
+    }
+
+    #volumeSlider::-moz-range-thumb {
+      width: 15px;
+      height: 15px;
+      background: gold;
+      border-radius: 50%;
+    }
+
+    /* repeat button (active state) */
+    #repeatBtn.active {
+      background: #e5b80055;
+      border-color: gold;
+      color: #fff3b3;
+      box-shadow: 0 0 15px gold;
+    }
+
+    #repeatBtn.active i {
+      color: white;
     }
 
     footer {
-      text-align: center;
-      margin-top: 2rem;
-      font-size: 0.85rem;
-      opacity: 0.8;
-      border-top: 1px dashed #ffd96666;
-      padding-top: 1rem;
-    }
-
-    /* resume button for mobile auto-play fix */
-    .resume-overlay {
-      position: fixed;
-      bottom: 30px;
-      left: 20px;
-      right: 20px;
-      background: #ffd966dd;
-      backdrop-filter: blur(20px);
-      color: #1e3a2f;
-      padding: 14px 20px;
-      border-radius: 60px;
-      text-align: center;
-      font-weight: bold;
-      z-index: 1000;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      margin-top: 2.5rem;
+      font-size: 1rem;
+      opacity: 0.9;
+      letter-spacing: 0.5px;
+      color: #ffe49e;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-      border: 1px solid gold;
-      font-size: 1rem;
-    }
-    .resume-overlay button {
-      background: #1e3a2f;
-      border: none;
-      color: gold;
-      padding: 8px 20px;
-      border-radius: 40px;
-      font-weight: bold;
-      cursor: pointer;
+      justify-content: center;
+      gap: 6px;
+      border-top: 1px dashed #ffd96699;
+      padding-top: 1.3rem;
     }
 
-    @media (max-width: 780px) {
-      .app-container { flex-direction: column; }
-      .track-item { flex-wrap: wrap; }
+    footer i {
+      color: #ffb347;
+    }
+
+    /* small screen */
+    @media (max-width: 460px) {
+      .player-card { padding: 1.5rem 1rem; }
+      h1 { font-size: 1.9rem; }
+      .bismillah { font-size: 1.4rem; }
+      .ctrl-btn { padding: 0.6rem 1.2rem; font-size: 1rem; }
     }
   </style>
 </head>
 <body>
-
-<div class="app-container">
-  <!-- MAIN AUDIO PLAYER -->
+<div class="container">
   <div class="player-card">
-    <h1><i class="fas fa-hand-sparkles"></i> Ruqyah Healing <i class="fas fa-quran"></i></h1>
-    <div style="text-align:center"><span class="sub">الرقية الشرعية · protection & healing</span></div>
+    <h1>
+      <i class="fas fa-moon"></i> Ruqyah Healing <i class="fas fa-star"></i>
+    </h1>
+    <div class="subhead">الرقية الشرعية · protection & healing</div>
+
+    <!-- Bismillah with elegance -->
     <div class="bismillah">بِسْمِ ٱللَّٰهِ الرَّحْمَـٰنِ الرَّحِيمِ</div>
 
-    <div class="now-playing">
-      <div class="now-playing-label"><i class="fas fa-head-side-medical"></i> NOW PLAYING</div>
-      <div id="currentTrackName">—</div>
-      <div id="repeatStatus">Repeat 0/0</div>
-    </div>
+    <!-- audio element (hidden) -->
+    <audio id="audio" preload="metadata" loop="false">
+      <source src="audio/ruqyah_full.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
 
-    <div class="time-row">
+    <!-- time display row -->
+    <div class="time-indicator">
       <span id="current-time">0:00</span>
       <span id="duration-time">0:00</span>
     </div>
-    <input type="range" id="progress" value="0" step="0.1">
 
+    <!-- progress slider -->
+    <input type="range" id="progress" value="0" min="0" max="100" step="0.1">
+
+    <!-- main control row -->
     <div class="controls">
-      <button class="ctrl-btn" id="playPauseBtn"><i class="fas fa-play"></i> Play</button>
-      <button class="ctrl-btn" id="stopBtn"><i class="fas fa-stop"></i> Stop</button>
-      <button class="ctrl-btn" id="prevTrackBtn"><i class="fas fa-backward-step"></i> Prev</button>
-      <button class="ctrl-btn" id="nextTrackBtn"><i class="fas fa-forward-step"></i> Next</button>
+      <button class="ctrl-btn" id="playPauseBtn" title="Play / Pause">
+        <i class="fas fa-play"></i> <span>Play</span>
+      </button>
+      <button class="ctrl-btn" id="stopBtn" title="Stop">
+        <i class="fas fa-stop"></i> Stop
+      </button>
+      <button class="ctrl-btn" id="repeatBtn" title="Repeat (loop)">
+        <i class="fas fa-repeat"></i> Repeat
+      </button>
     </div>
 
+    <!-- volume control -->
     <div class="volume-box">
       <i class="fas fa-volume-high" id="volumeIcon"></i>
       <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.7">
     </div>
-    <footer><i class="fas fa-mosque"></i> Developed by Vaseem Ahmad · <i class="fas fa-repeat"></i> Each Surah repeats 3/5/7 times</footer>
-  </div>
 
-  <!-- PLAYLIST PANEL -->
-  <div class="playlist-panel">
-    <div class="playlist-header">
-      <span class="playlist-title"><i class="fas fa-list-ul"></i> Ruqyah Surahs</span>
-      <button id="resetPlaylistBtn" class="reset-playlist"><i class="fas fa-arrows-rotate"></i> Reset</button>
+    <!-- subtle reminder -->
+    <div style="font-size:0.9rem; margin-top:1rem; background:rgba(0,0,0,0.2); border-radius:50px; padding:0.3rem; color:#ffdb9f;">
+      <i class="fas fa-headphones"></i> listen with sincere heart
     </div>
-    <div id="playlistContainer" style="max-height: 500px; overflow-y: auto; padding-right: 5px;"></div>
-    <div style="margin-top: 15px; font-size: 12px; text-align:center; opacity:0.7;">
-      <i class="fas fa-info-circle"></i> Each surah repeats selected times → next surah automatically
-    </div>
+
+    <footer>
+      <i class="fas fa-heart" style="color: #ff9f6e;"></i> Developed by Vaseem Ahmad <i class="fas fa-hand-sparkles"></i>
+    </footer>
   </div>
 </div>
 
 <script>
-  // ======================= TRACKS DEFINITION =======================
-  const tracks = [
-    { id: 0, name: "Surah Al-Fatiha",      file: "audio/fatiha.mp3",      repeatCount: 3, currentRepeat: 0 },
-    { id: 1, name: "Ayat-ul-Kursi",        file: "audio/aayat_al_kursi.mp3", repeatCount: 3, currentRepeat: 0 },
-    { id: 2, name: "Surah Al-Baqarah (Ruqyah)", file: "audio/baqrha.mp3", repeatCount: 3, currentRepeat: 0 },
-    { id: 3, name: "Surah Al-Ikhlas",      file: "audio/ikhlas.mp3",      repeatCount: 3, currentRepeat: 0 },
-    { id: 4, name: "Surah Al-Falaq",       file: "audio/falaq.mp3",       repeatCount: 3, currentRepeat: 0 },
-    { id: 5, name: "Surah An-Naas",        file: "audio/naas.mp3",        repeatCount: 3, currentRepeat: 0 }
-  ];
+  (function() {
+    // get elements
+    const audio = document.getElementById('audio');
+    const progress = document.getElementById('progress');
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const repeatBtn = document.getElementById('repeatBtn');
+    const volumeSlider = document.getElementById('volumeSlider');
+    const volumeIcon = document.getElementById('volumeIcon');
+    const currentTimeSpan = document.getElementById('current-time');
+    const durationSpan = document.getElementById('duration-time');
 
-  // DOM elements
-  const audio = new Audio();
-  // Mobile: ensure playsinline and preload
-  audio.setAttribute('playsinline', 'true');
-  audio.preload = 'auto';
-  
-  const progress = document.getElementById('progress');
-  const playPauseBtn = document.getElementById('playPauseBtn');
-  const stopBtn = document.getElementById('stopBtn');
-  const prevBtn = document.getElementById('prevTrackBtn');
-  const nextBtn = document.getElementById('nextTrackBtn');
-  const volumeSlider = document.getElementById('volumeSlider');
-  const volumeIcon = document.getElementById('volumeIcon');
-  const currentTimeSpan = document.getElementById('current-time');
-  const durationSpan = document.getElementById('duration-time');
-  const currentTrackNameSpan = document.getElementById('currentTrackName');
-  const repeatStatusSpan = document.getElementById('repeatStatus');
-  const playlistContainer = document.getElementById('playlistContainer');
-  const resetPlaylistBtn = document.getElementById('resetPlaylistBtn');
+    // state
+    let isPlaying = false;
+    let repeatActive = false;   // loop mode
 
-  // State
-  let currentTrackIndex = 0;
-  let isPlaying = false;
-  let isSeeking = false;
-  let resumeRequestCallback = null;  // stores function to retry playback after user tap
-
-  // Helper: format time mm:ss
-  function formatTime(seconds) {
-    if (isNaN(seconds) || !isFinite(seconds)) return "0:00";
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-  }
-
-  // Show resume button on mobile when autoplay gets blocked
-  function showResumeButton(message, retryFn) {
-    // remove any existing overlay
-    const existing = document.querySelector('.resume-overlay');
-    if (existing) existing.remove();
-    
-    const overlay = document.createElement('div');
-    overlay.className = 'resume-overlay';
-    overlay.innerHTML = `
-      <span><i class="fas fa-hand-pointer"></i> ${message}</span>
-      <button id="resumePlayBtn">▶ Resume Playback</button>
-    `;
-    document.body.appendChild(overlay);
-    
-    const resumeBtn = document.getElementById('resumePlayBtn');
-    const handleResume = () => {
-      retryFn();
-      overlay.remove();
-      document.removeEventListener('click', handleGlobalTap);
-    };
-    const handleGlobalTap = (e) => {
-      if (e.target.closest('.resume-overlay')) return;
-      retryFn();
-      overlay.remove();
-      document.removeEventListener('click', handleGlobalTap);
-    };
-    resumeBtn.addEventListener('click', handleResume);
-    // Also tap anywhere outside can resume (optional)
-    document.addEventListener('click', handleGlobalTap);
-    // auto remove after 30 sec? not needed
-  }
-
-  // Core function to safely play (handles mobile autoplay block)
-  function safePlay() {
-    if (!audio.src) return Promise.reject(new Error("no source"));
-    return audio.play().catch(err => {
-      if (err.name === 'NotAllowedError') {
-        // on mobile, after ended, browser blocks automatic play
-        showResumeButton("⚠️ Tap to continue Ruqyah recitation", () => {
-          audio.play().catch(e => console.warn("still blocked", e));
-        });
-      }
-      return Promise.reject(err);
-    });
-  }
-
-  // Update UI: now playing info and repeat status
-  function updateNowPlayingUI() {
-    const track = tracks[currentTrackIndex];
-    if (track) {
-      currentTrackNameSpan.textContent = track.name;
-      const remaining = track.repeatCount - track.currentRepeat;
-      repeatStatusSpan.innerHTML = `<i class="fas fa-repeat"></i> Repeat ${track.currentRepeat + 1} / ${track.repeatCount} (${remaining} left)`;
-    } else {
-      currentTrackNameSpan.textContent = "Completed";
-      repeatStatusSpan.textContent = "All done  🤲";
+    // helper: format seconds to mm:ss
+    function formatTime(seconds) {
+      if (isNaN(seconds) || !isFinite(seconds)) return '0:00';
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
     }
-    renderPlaylist(); // refresh highlight & badges
-  }
 
-  // Load current track (without auto-playing)
-  function loadCurrentTrack() {
-    const track = tracks[currentTrackIndex];
-    if (!track) return;
-    
-    audio.removeEventListener('ended', handleTrackEnd);
-    audio.src = track.file;
-    audio.load();
-    
-    audio.addEventListener('ended', handleTrackEnd);
-    
-    audio.addEventListener('loadedmetadata', function onMeta() {
-      durationSpan.textContent = formatTime(audio.duration);
-      progress.max = 100;
-      audio.removeEventListener('loadedmetadata', onMeta);
-    });
-    
-    if (isPlaying) {
-      safePlay().catch(e => console.warn("load play error", e));
-    }
-    updateNowPlayingUI();
-  }
-
-  // ========== CORE REPEAT LOGIC WITH MOBILE FIX ==========
-  function handleTrackEnd() {
-    const track = tracks[currentTrackIndex];
-    if (!track) return;
-    
-    // Increment repeat counter
-    track.currentRepeat++;
-    
-    if (track.currentRepeat < track.repeatCount) {
-      // Need to play same surah again
-      audio.currentTime = 0;
-      // critical: use safePlay to handle mobile autoplay block
+    // update play/pause button icon & text
+    function updatePlayPauseButton() {
+      const icon = playPauseBtn.querySelector('i');
+      const span = playPauseBtn.querySelector('span');
       if (isPlaying) {
-        safePlay().catch(err => {
-          console.warn("auto-repeat blocked, showing resume");
-          // user will resume via overlay, keep isPlaying true? we'll manage
-          // But we must ensure that after resume, it continues correctly
-          // Store a callback to retry same track repeat
-          const retrySame = () => {
-            safePlay().catch(e => console.warn);
-          };
-          showResumeButton("Tap to continue recitation (repeat)", retrySame);
-        });
-      }
-      updateNowPlayingUI();
-    } else {
-      // Finished all repeats of current surah -> move to next
-      track.currentRepeat = 0; // reset for potential revisit
-      const nextIndex = currentTrackIndex + 1;
-      if (nextIndex < tracks.length) {
-        currentTrackIndex = nextIndex;
-        loadCurrentTrack();
-        if (isPlaying) {
-          safePlay().catch(err => {
-            console.warn("next track autoplay blocked");
-            const retryNext = () => {
-              safePlay().catch(e => console.warn);
-            };
-            showResumeButton("Tap to continue to next Surah", retryNext);
-          });
-        }
-        updateNowPlayingUI();
+        icon.className = 'fas fa-pause';
+        span.textContent = 'Pause';
       } else {
-        // Playlist complete
+        icon.className = 'fas fa-play';
+        span.textContent = 'Play';
+      }
+    }
+
+    // play audio
+    function playAudio() {
+      audio.play().catch(e => {
+        console.warn('playback failed:', e);
+        // maybe show a toast, but we'll just reset
         isPlaying = false;
         updatePlayPauseButton();
-        audio.pause();
-        audio.currentTime = 0;
-        currentTrackNameSpan.textContent = "✨ Completed ✨";
-        repeatStatusSpan.textContent = "All Surahs finished";
-        renderPlaylist();
-      }
-    }
-  }
-
-  // Progress & time update
-  function updateProgress() {
-    if (!isSeeking && audio.duration && !isNaN(audio.duration)) {
-      const percent = (audio.currentTime / audio.duration) * 100;
-      progress.value = percent;
-      currentTimeSpan.textContent = formatTime(audio.currentTime);
-    }
-  }
-  
-  // Seek events
-  progress.addEventListener('input', (e) => {
-    if (audio.duration) {
-      isSeeking = true;
-      const newTime = (progress.value / 100) * audio.duration;
-      audio.currentTime = newTime;
-      currentTimeSpan.textContent = formatTime(newTime);
-    }
-  });
-  progress.addEventListener('change', () => {
-    isSeeking = false;
-  });
-  
-  audio.addEventListener('timeupdate', updateProgress);
-  
-  // Play/Pause state sync
-  audio.addEventListener('play', () => {
-    isPlaying = true;
-    updatePlayPauseButton();
-  });
-  audio.addEventListener('pause', () => {
-    if (!audio.ended) isPlaying = false;
-    updatePlayPauseButton();
-  });
-  
-  function updatePlayPauseButton() {
-    const icon = playPauseBtn.querySelector('i');
-    const span = playPauseBtn.querySelector('span');
-    if (isPlaying) {
-      icon.className = 'fas fa-pause';
-      span.textContent = 'Pause';
-    } else {
-      icon.className = 'fas fa-play';
-      span.textContent = 'Play';
-    }
-  }
-  
-  function togglePlayPause() {
-    if (isPlaying) {
-      audio.pause();
-    } else {
-      if (!audio.src || audio.ended) {
-        loadCurrentTrack();
-      }
-      safePlay().catch(err => {
-        console.warn("initial play blocked", err);
-        showResumeButton("Tap to start Ruqyah", () => {
-          safePlay().catch(e => console.warn);
-        });
       });
+      isPlaying = true;
+      updatePlayPauseButton();
     }
-  }
-  
-  function stopAudio() {
-    audio.pause();
-    audio.currentTime = 0;
-    isPlaying = false;
-    updatePlayPauseButton();
-    updateProgress();
-    // remove any resume overlay if present
-    const ov = document.querySelector('.resume-overlay');
-    if (ov) ov.remove();
-  }
-  
-  function nextTrack() {
-    const currentTrack = tracks[currentTrackIndex];
-    if (currentTrack) {
-      currentTrack.currentRepeat = currentTrack.repeatCount; // force finish
-    }
-    handleTrackEnd(); // this will move to next or handle completion
-    const ov = document.querySelector('.resume-overlay');
-    if (ov) ov.remove();
-  }
-  
-  function prevTrack() {
-    if (currentTrackIndex > 0) {
-      const oldTrack = tracks[currentTrackIndex];
-      if (oldTrack) oldTrack.currentRepeat = 0;
-      currentTrackIndex--;
-      const newTrack = tracks[currentTrackIndex];
-      if (newTrack) newTrack.currentRepeat = 0;
-      loadCurrentTrack();
-      if (isPlaying) {
-        safePlay().catch(e => console.warn);
-      }
-      updateNowPlayingUI();
-    } else {
-      const firstTrack = tracks[0];
-      if (firstTrack) {
-        firstTrack.currentRepeat = 0;
-        currentTrackIndex = 0;
-        loadCurrentTrack();
-        if (isPlaying) safePlay().catch(e => console.warn);
-        updateNowPlayingUI();
-      }
-    }
-    const ov = document.querySelector('.resume-overlay');
-    if (ov) ov.remove();
-  }
-  
-  function resetPlaylist() {
-    tracks.forEach(t => t.currentRepeat = 0);
-    currentTrackIndex = 0;
-    loadCurrentTrack();
-    if (isPlaying) {
+
+    // pause audio
+    function pauseAudio() {
       audio.pause();
       isPlaying = false;
       updatePlayPauseButton();
     }
-    audio.currentTime = 0;
-    updateNowPlayingUI();
-    renderPlaylist();
-    const ov = document.querySelector('.resume-overlay');
-    if (ov) ov.remove();
-  }
-  
-  // ========== RENDER PLAYLIST with repeat selectors ==========
-  function renderPlaylist() {
-    playlistContainer.innerHTML = '';
-    tracks.forEach((track, idx) => {
-      const div = document.createElement('div');
-      div.className = 'track-item';
-      if (idx === currentTrackIndex) div.classList.add('active-track');
-      
-      const infoDiv = document.createElement('div');
-      infoDiv.className = 'track-info';
-      infoDiv.innerHTML = `
-        <div class="track-name">${track.name}</div>
-        <div class="repeat-count-badge"><i class="fas fa-arrows-spin"></i> ${track.currentRepeat}/${track.repeatCount} done</div>
-      `;
-      
-      const select = document.createElement('select');
-      select.className = 'repeat-selector';
-      [3,5,7].forEach(opt => {
-        const option = document.createElement('option');
-        option.value = opt;
-        option.textContent = `${opt} times`;
-        if (track.repeatCount === opt) option.selected = true;
-        select.appendChild(option);
-      });
-      select.addEventListener('change', (e) => {
-        const newVal = parseInt(e.target.value);
-        track.repeatCount = newVal;
-        if (track.currentRepeat >= newVal) {
-          track.currentRepeat = newVal - 1;
-          if (track.currentRepeat < 0) track.currentRepeat = 0;
-        }
-        if (idx === currentTrackIndex) {
-          updateNowPlayingUI();
-        }
-        renderPlaylist();
-      });
-      
-      const skipBtn = document.createElement('button');
-      skipBtn.className = 'skip-icon';
-      skipBtn.innerHTML = '<i class="fas fa-play-circle"></i>';
-      skipBtn.title = 'Play this Surah from start (reset repeats)';
-      skipBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        track.currentRepeat = 0;
-        currentTrackIndex = idx;
-        loadCurrentTrack();
-        if (isPlaying) safePlay().catch(e => console.warn);
-        updateNowPlayingUI();
-        renderPlaylist();
-        const ov = document.querySelector('.resume-overlay');
-        if (ov) ov.remove();
-      });
-      
-      div.appendChild(infoDiv);
-      div.appendChild(select);
-      div.appendChild(skipBtn);
-      playlistContainer.appendChild(div);
-    });
-  }
-  
-  // Volume control
-  volumeSlider.addEventListener('input', (e) => {
-    const vol = parseFloat(e.target.value);
-    audio.volume = vol;
-    if (vol >= 0.6) volumeIcon.className = 'fas fa-volume-high';
-    else if (vol > 0) volumeIcon.className = 'fas fa-volume-low';
-    else volumeIcon.className = 'fas fa-volume-off';
-  });
-  audio.volume = volumeSlider.value;
-  volumeSlider.dispatchEvent(new Event('input'));
-  
-  // Button listeners
-  playPauseBtn.addEventListener('click', togglePlayPause);
-  stopBtn.addEventListener('click', stopAudio);
-  prevBtn.addEventListener('click', prevTrack);
-  nextBtn.addEventListener('click', nextTrack);
-  resetPlaylistBtn.addEventListener('click', resetPlaylist);
-  
-  // Initial load
-  loadCurrentTrack();
-  renderPlaylist();
-  updateNowPlayingUI();
-  
-  // Error handling for missing files (mobile friendly)
-  audio.addEventListener('error', (e) => {
-    console.error("Audio error", audio.error);
-    const missingFile = tracks[currentTrackIndex]?.file || "audio file";
-    const msg = `⚠️ Could not load: ${missingFile}\nPlease ensure MP3 files are in 'audio/' folder with exact names:\nfatiha.mp3, aayat_al_kursi.mp3, baqrha.mp3, ikhlas.mp3, falaq.mp3, naas.mp3`;
-    if (!document.querySelector('.error-toast')) {
-      const toast = document.createElement('div');
-      toast.className = 'error-toast';
-      toast.style.position = 'fixed';
-      toast.style.bottom = '20px';
-      toast.style.left = '20px';
-      toast.style.right = '20px';
-      toast.style.background = '#c72a2add';
-      toast.style.backdropFilter = 'blur(12px)';
-      toast.style.padding = '12px';
-      toast.style.borderRadius = '30px';
-      toast.style.textAlign = 'center';
-      toast.style.fontSize = '0.9rem';
-      toast.style.zIndex = '999';
-      toast.innerHTML = msg + ' <button style="background:gold; border:none; border-radius:30px; padding:4px 12px; margin-left:10px;" onclick="this.parentElement.remove()">OK</button>';
-      document.body.appendChild(toast);
-      setTimeout(() => toast?.remove(), 8000);
+
+    // toggle play/pause
+    function togglePlay() {
+      if (isPlaying) {
+        pauseAudio();
+      } else {
+        playAudio();
+      }
     }
-  });
+
+    // stop audio (pause + reset time)
+    function stopAudio() {
+      audio.pause();
+      audio.currentTime = 0;
+      isPlaying = false;
+      updatePlayPauseButton();
+      // progress bar will update via timeupdate
+    }
+
+    // update progress bar and time labels
+    function updateProgress() {
+      if (audio.duration && !isNaN(audio.duration)) {
+        const percent = (audio.currentTime / audio.duration) * 100;
+        progress.value = percent;
+        currentTimeSpan.textContent = formatTime(audio.currentTime);
+        durationSpan.textContent = formatTime(audio.duration);
+      } else {
+        // if duration unknown (metadata not loaded yet)
+        currentTimeSpan.textContent = '0:00';
+        durationSpan.textContent = '0:00';
+      }
+    }
+
+    // when metadata loaded (duration available)
+    audio.addEventListener('loadedmetadata', () => {
+      durationSpan.textContent = formatTime(audio.duration);
+      progress.max = 100;
+      // set volume from slider
+      audio.volume = volumeSlider.value;
+    });
+
+    // timeupdate event
+    audio.addEventListener('timeupdate', updateProgress);
+
+    // scrubber input (seeking)
+    progress.addEventListener('input', function(e) {
+      if (audio.duration) {
+        const newTime = (progress.value / 100) * audio.duration;
+        audio.currentTime = newTime;
+        // update current time while dragging
+        currentTimeSpan.textContent = formatTime(newTime);
+      }
+    });
+
+    // allow seeking even when paused (no need to change play state)
+    // but also if user drags and then plays, fine.
+
+    // volume slider
+    volumeSlider.addEventListener('input', function(e) {
+      const vol = parseFloat(volumeSlider.value);
+      audio.volume = vol;
+      // update icon based on volume level
+      if (vol >= 0.5) {
+        volumeIcon.className = 'fas fa-volume-high';
+      } else if (vol > 0) {
+        volumeIcon.className = 'fas fa-volume-low';
+      } else {
+        volumeIcon.className = 'fas fa-volume-off';
+      }
+    });
+
+    // repeat toggle
+    repeatBtn.addEventListener('click', function() {
+      repeatActive = !repeatActive;
+      audio.loop = repeatActive;
+      if (repeatActive) {
+        repeatBtn.classList.add('active');
+      } else {
+        repeatBtn.classList.remove('active');
+      }
+    });
+
+    // play/pause toggle
+    playPauseBtn.addEventListener('click', togglePlay);
+
+    // stop button
+    stopBtn.addEventListener('click', stopAudio);
+
+    // if audio ends, reset play button (and handle repeat via loop)
+    audio.addEventListener('ended', function() {
+      if (!repeatActive) {
+        isPlaying = false;
+        updatePlayPauseButton();
+        // optional: keep progress at end, but button shows play
+      }
+      // if loop active, it continues playing – button stays in "pause" mode? 
+      // we need to sync isPlaying. when loop continues, it's still playing.
+      // but ended fires then loop restarts. we keep isPlaying = true? 
+      // actually audio.loop will restart without firing 'ended'? In modern browsers,
+      // 'ended' does NOT fire when loop is true. So safe. For non-loop, we set isPlaying false.
+    });
+
+    // optional: handle if audio is paused by other means
+    audio.addEventListener('pause', function() {
+      if (audio.readyState !== 0 && !audio.ended) { // avoid toggling if ended already handled
+        isPlaying = false;
+        updatePlayPauseButton();
+      }
+    });
+
+    audio.addEventListener('play', function() {
+      isPlaying = true;
+      updatePlayPauseButton();
+    });
+
+    // initial update
+    updateProgress();
+
+    // set initial volume icon
+    if (audio.volume !== undefined) {
+      volumeSlider.value = audio.volume;
+      if (audio.volume >= 0.5) volumeIcon.className = 'fas fa-volume-high';
+      else if (audio.volume > 0) volumeIcon.className = 'fas fa-volume-low';
+      else volumeIcon.className = 'fas fa-volume-off';
+    }
+
+    // if audio file not found or load error
+    audio.addEventListener('error', function() {
+      // simple feedback: disable controls or show message
+      document.querySelector('.bismillah').innerHTML += '<span style="display:block; font-size:0.8rem; color:#ffb6b6;">⚠️ audio file missing? place in audio/ruqyah_full.mp3</span>';
+    });
+  })();
 </script>
 </body>
 </html>

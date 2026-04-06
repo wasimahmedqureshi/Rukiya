@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Ruqyah Healing · Dual Track | Protection & Peace</title>
+  <title>Ruqyah Healing · Triple Track | Protection, Peace & Power</title>
   <!-- Font Awesome 6 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
@@ -36,7 +36,7 @@
 
     .container {
       width: 100%;
-      max-width: 620px;
+      max-width: 720px;
       z-index: 10;
       animation: fadeIn 0.8s ease;
     }
@@ -85,7 +85,7 @@
       display: inline-block;
     }
 
-    /* track selector row */
+    /* track selector row - 3 buttons */
     .track-selector {
       display: flex;
       flex-wrap: wrap;
@@ -97,8 +97,8 @@
       background: rgba(0, 0, 0, 0.35);
       border: 1px solid rgba(255, 215, 0, 0.6);
       border-radius: 60px;
-      padding: 0.6rem 1.2rem;
-      font-size: 0.95rem;
+      padding: 0.6rem 1rem;
+      font-size: 0.9rem;
       font-weight: 600;
       color: #ffefc0;
       backdrop-filter: blur(6px);
@@ -107,9 +107,11 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
+      text-align: left;
+      line-height: 1.2;
     }
     .track-btn i {
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       color: #ffd966;
     }
     .track-btn.active-track-btn {
@@ -121,6 +123,10 @@
     .track-btn:hover {
       background: #ffd96622;
       transform: scale(1.02);
+    }
+    .track-btn span {
+      font-size: 0.75rem;
+      opacity: 0.9;
     }
 
     .bismillah {
@@ -291,12 +297,12 @@
       backdrop-filter: blur(4px);
     }
 
-    @media (max-width: 460px) {
+    @media (max-width: 560px) {
       .player-card { padding: 1.5rem 1rem; }
       h1 { font-size: 1.9rem; }
       .bismillah { font-size: 1.4rem; }
       .ctrl-btn { padding: 0.6rem 1.2rem; font-size: 1rem; }
-      .track-btn { padding: 0.4rem 1rem; font-size: 0.85rem; }
+      .track-btn { font-size: 0.8rem; padding: 0.5rem 0.8rem; }
     }
   </style>
 </head>
@@ -306,15 +312,18 @@
     <h1>
       <i class="fas fa-moon"></i> Ruqyah Healing <i class="fas fa-star"></i>
     </h1>
-    <div class="subhead">الرقية الشرعية · protection & inner peace</div>
+    <div class="subhead">الرقية الشرعية · protection, peace & power</div>
 
-    <!-- Dual Track Selection Buttons -->
+    <!-- Triple Track Selection Buttons -->
     <div class="track-selector">
       <button id="trackProtectBtn" class="track-btn active-track-btn">
-        <i class="fas fa-shield-alt"></i> Standard Ruqyah<br><span style="font-size:0.7rem;">Protection & Healing</span>
+        <i class="fas fa-shield-alt"></i> Standard Ruqyah<br><span>Protection & Healing</span>
       </button>
       <button id="trackPeaceBtn" class="track-btn">
-        <i class="fas fa-dove"></i> Peace & Relief<br><span style="font-size:0.7rem;">Depression · Anxiety · Loneliness</span>
+        <i class="fas fa-dove"></i> Peace & Relief<br><span>Depression · Anxiety · Loneliness</span>
+      </button>
+      <button id="trackPowerBtn" class="track-btn">
+        <i class="fas fa-skull-crossbones"></i> Power Ruqyah<br><span>Evil Eye · Sihir · Jinns · Jealousy</span>
       </button>
     </div>
 
@@ -322,7 +331,7 @@
 
     <!-- Now playing indicator -->
     <div class="now-playing-label"><i class="fas fa-headphones"></i> NOW PLAYING</div>
-    <div id="currentTrackLabel" style="text-align:center; margin-bottom: 1rem;">🕌 Protection Ruqyah</div>
+    <div id="currentTrackLabel" style="text-align:center; margin-bottom: 1rem;">🛡️ Protection Ruqyah</div>
 
     <audio id="audio" preload="metadata"></audio>
 
@@ -344,7 +353,7 @@
     </div>
 
     <div style="font-size:0.85rem; margin-top:1rem; background:rgba(0,0,0,0.2); border-radius:50px; padding:0.3rem; text-align:center; color:#ffdb9f;">
-      <i class="fas fa-info-circle"></i> Choose recitation above · repeat mode available
+      <i class="fas fa-info-circle"></i> Choose any Ruqyah above · repeat mode available
     </div>
 
     <footer>
@@ -355,7 +364,7 @@
 
 <script>
   (function() {
-    // ----- TRACKS -----
+    // ----- THREE TRACKS -----
     const TRACKS = {
       protection: {
         name: "🛡️ Protection & Healing Ruqyah",
@@ -364,10 +373,14 @@
       peace: {
         name: "🌸 Peace & Relief (Depression / Anxiety / Loneliness)",
         url: "audio/Powerful Ruqyah FOR PEACE And Remove Depression Anxiety Loneliness.mp3"
+      },
+      power: {
+        name: "⚔️ Power Ruqyah (Evil Eye · Black Magic · Jinns · Jealousy)",
+        url: "audio/Ruqyah Quran Against Bad Evil Eye, Black magic Sihir, Anxiety, Jinns, & Jealousy.mp3"
       }
     };
 
-    let currentTrackKey = "protection"; // 'protection' or 'peace'
+    let currentTrackKey = "protection"; // 'protection', 'peace', 'power'
     let isPlaying = false;
     let repeatActive = false;
 
@@ -384,6 +397,7 @@
     const currentTrackLabelSpan = document.getElementById('currentTrackLabel');
     const trackProtectBtn = document.getElementById('trackProtectBtn');
     const trackPeaceBtn = document.getElementById('trackPeaceBtn');
+    const trackPowerBtn = document.getElementById('trackPowerBtn');
 
     // helper: format time mm:ss
     function formatTime(seconds) {
@@ -411,7 +425,6 @@
       const track = TRACKS[currentTrackKey];
       if (!track) return;
       
-      // store current playing state before changing src
       const wasPlaying = isPlaying;
       if (wasPlaying) {
         audio.pause();
@@ -432,7 +445,6 @@
         audio.removeEventListener('loadedmetadata', onMeta);
       });
       
-      // if it was playing before switching, resume after load
       if (wasPlaying) {
         audio.play().then(() => {
           isPlaying = true;
@@ -448,25 +460,20 @@
       }
     }
 
-    // switch track (called when user clicks on protection or peace button)
+    // switch track (protection / peace / power)
     function switchTrack(trackKey) {
       if (currentTrackKey === trackKey) return;
       currentTrackKey = trackKey;
       
       // update active button style
-      if (trackKey === 'protection') {
-        trackProtectBtn.classList.add('active-track-btn');
-        trackPeaceBtn.classList.remove('active-track-btn');
-      } else {
-        trackPeaceBtn.classList.add('active-track-btn');
-        trackProtectBtn.classList.remove('active-track-btn');
-      }
+      trackProtectBtn.classList.remove('active-track-btn');
+      trackPeaceBtn.classList.remove('active-track-btn');
+      trackPowerBtn.classList.remove('active-track-btn');
+      if (trackKey === 'protection') trackProtectBtn.classList.add('active-track-btn');
+      else if (trackKey === 'peace') trackPeaceBtn.classList.add('active-track-btn');
+      else if (trackKey === 'power') trackPowerBtn.classList.add('active-track-btn');
       
-      // reset repeat UI state (but keep repeatActive value? we keep as is)
-      // load new track
       loadCurrentTrack();
-      
-      // if repeat was on, ensure it's applied to new track
       audio.loop = repeatActive;
     }
 
@@ -479,9 +486,16 @@
         console.warn('playback failed:', e);
         isPlaying = false;
         updatePlayPauseButton();
-        // show gentle hint if file missing
         if (e.name === 'NotSupportedError' || audio.error) {
-          alert(`⚠️ Audio file not found!\n\nMake sure "${TRACKS[currentTrackKey].url}" exists in the "audio/" folder.\n\nFor Peace track, please upload:\n"Powerful Ruqyah FOR PEACE And Remove Depression Anxiety Loneliness.mp3"`);
+          let friendlyMsg = `⚠️ Audio file not found!\n\n`;
+          if (currentTrackKey === 'protection') {
+            friendlyMsg += `Please ensure "audio/ruqyah_full.mp3" exists.\n`;
+          } else if (currentTrackKey === 'peace') {
+            friendlyMsg += `Please upload:\n"Powerful Ruqyah FOR PEACE And Remove Depression Anxiety Loneliness.mp3"\ninside the "audio/" folder.`;
+          } else {
+            friendlyMsg += `Please upload:\n"Ruqyah Quran Against Bad Evil Eye, Black magic Sihir, Anxiety, Jinns, & Jealousy.mp3"\ninside the "audio/" folder.`;
+          }
+          alert(friendlyMsg);
         }
       });
     }
@@ -505,7 +519,6 @@
       audio.currentTime = 0;
       isPlaying = false;
       updatePlayPauseButton();
-      // update progress display
       if (audio.duration) {
         progress.value = 0;
         currentTimeSpan.textContent = '0:00';
@@ -525,7 +538,6 @@
       }
     }
 
-    // seek
     function handleProgressInput(e) {
       if (audio.duration) {
         const newTime = (progress.value / 100) * audio.duration;
@@ -534,16 +546,11 @@
       }
     }
 
-    // ended event: if repeat is active, loop manually (since loop attribute works, but we also keep UI)
-    // Actually loop attribute handles continuous replay, but we also want to keep isPlaying true.
-    // However, to avoid any issue we rely on audio.loop.
     function onEnded() {
       if (!repeatActive) {
         isPlaying = false;
         updatePlayPauseButton();
       } else {
-        // loop is active, audio will restart automatically, isPlaying stays true
-        // but ensure button state remains "pause"
         if (!isPlaying) {
           isPlaying = true;
           updatePlayPauseButton();
@@ -551,7 +558,6 @@
       }
     }
 
-    // volume
     function setupVolume() {
       const vol = parseFloat(volumeSlider.value);
       audio.volume = vol;
@@ -592,7 +598,6 @@
       else volumeIcon.className = 'fas fa-volume-off';
     });
 
-    // repeat button logic
     repeatBtn.addEventListener('click', () => {
       repeatActive = !repeatActive;
       audio.loop = repeatActive;
@@ -603,37 +608,35 @@
       }
     });
 
-    // control buttons
     playPauseBtn.addEventListener('click', togglePlay);
     stopBtn.addEventListener('click', stopAudio);
-
-    // track switching buttons
     trackProtectBtn.addEventListener('click', () => switchTrack('protection'));
     trackPeaceBtn.addEventListener('click', () => switchTrack('peace'));
+    trackPowerBtn.addEventListener('click', () => switchTrack('power'));
 
     // initial setup
     audio.volume = volumeSlider.value;
     setupVolume();
-    // set default track (protection)
     currentTrackKey = 'protection';
     trackProtectBtn.classList.add('active-track-btn');
     trackPeaceBtn.classList.remove('active-track-btn');
+    trackPowerBtn.classList.remove('active-track-btn');
     loadCurrentTrack();
 
-    // initial repeat UI (default off)
     repeatActive = false;
     audio.loop = false;
     repeatBtn.classList.remove('active');
 
-    // error handler for missing files
+    // error handler for missing files (show toast for any track)
     audio.addEventListener('error', (e) => {
       console.error("Audio error", audio.error);
-      const trackName = TRACKS[currentTrackKey].name;
-      let friendlyMsg = `⚠️ Could not load "${trackName}".\n\n`;
+      let friendlyMsg = `⚠️ Could not load "${TRACKS[currentTrackKey].name}".\n\n`;
       if (currentTrackKey === 'protection') {
         friendlyMsg += `Please ensure "audio/ruqyah_full.mp3" exists.\n`;
-      } else {
+      } else if (currentTrackKey === 'peace') {
         friendlyMsg += `Please upload the file:\n"Powerful Ruqyah FOR PEACE And Remove Depression Anxiety Loneliness.mp3"\ninside the "audio/" folder.`;
+      } else {
+        friendlyMsg += `Please upload the file:\n"Ruqyah Quran Against Bad Evil Eye, Black magic Sihir, Anxiety, Jinns, & Jealousy.mp3"\ninside the "audio/" folder.`;
       }
       if (!document.querySelector('.error-toast')) {
         const toast = document.createElement('div');
